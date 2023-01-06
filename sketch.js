@@ -1,5 +1,3 @@
-const p5 = require('p5');
-
 function setup() {
 	createCanvas(400, 400);
 }
