@@ -33,7 +33,6 @@ function draw() {
 	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
 		player.shootSmallTentacle()
 	}
-	console.log(millis())
 
 	background(255);
 
