@@ -44,7 +44,7 @@ class Player{
     }
 
     shootTentacle(){
-        this.targetVector = createVector(mouseX, mouseY)
+        this.targetVector = createVector(mouseX + this.position.x - 200, mouseY + this.position.y - 200)
         this.activeTentacle = new Tentacle(this.position, this.targetVector, this.range)
         this.targetVector.sub(this.position).limit(this.range)
         this.targetVector.add(this.position)
@@ -56,7 +56,7 @@ class Player{
     }
 
     applyForce(force){
-        this.acc = force.copy().normalize()
+        this.acc.add(force.copy().normalize())
     }
 
 
