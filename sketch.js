@@ -10,11 +10,13 @@ let lastMillis;
 
 let player
 
+let noise;
+
 function setup() {
 	createCanvas(400, 400);
-
+	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
-	map = new Map(200, 200, 5, 110)
+	map = new Map(100, 100, 4, 20)
 	player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
 	frameRate(5)
@@ -24,7 +26,6 @@ function draw() {
 
 	let delta = millis() - lastMillis;
 	lastMillis = millis();
-
 	background(255);
 	noFill();
 	stroke(0)
@@ -42,7 +43,7 @@ function draw() {
 	// push();
 	// 		ellipse(playerLocation.x, playerLocation.y, 10, 10)
 			//scale(1.5)
-			map.render();
+			 map.render();
 			player.draw()
 			// fill(255)
 			// ellipseMode(CENTER)

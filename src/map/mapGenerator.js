@@ -17,6 +17,16 @@ class Map {
 		this.refresh();
 	}
 
+	solidBorder(){
+		for (let x = 0; x < this.width; x++) {
+			for (let y = 0; y < this.height; y++) {
+				if(x === 0 || y === 0 || x === this.width-1 || y === this.height-1){
+					this.tiles[x][y] = new Wall(x, y,this.scale, 255);
+				}
+			}
+		}
+	}
+
 	refresh(){
 
 		noiseSeed(random(1, 10000));
@@ -24,7 +34,8 @@ class Map {
 		for (let x = 0; x < this.width; x++) {
 			this.tiles[x] = [];
 			for (let y = 0; y < this.height; y++) {
-				let noiseVal = noise(5000 + x / this.scale, 5000 + y / this.scale) * 255;
+				let noiseVal = noise.noise2D(5000 + x / this.scale, 5000 + y / this.scale) * 255;
+				// let noiseVal = noise(5000 + x / this.scale, 5000 + y / this.scale) * 255;
 
 				let newTile;
 				if(noiseVal < this.caveThreshold){
@@ -36,6 +47,7 @@ class Map {
 				this.tiles[x][y] = newTile;
 			}
 		}
+		this.solidBorder();
 		// console.log("refresh", this.tiles);
 	}
 
@@ -66,11 +78,12 @@ class Tile {
 
 class Wall extends Tile {
 	render(){
-		if(camera.vectorInView(this.location)){
+		if(camera.rectInView(this.location.x, this.location.y, this.scale, this.scale)){
 			push();
 				camera.translateToView();
 				translate(this.location.x, this.location.y);
-				noFill();
+				// noFill();
+				fill(0)
 				rectMode(CENTER)
 				// stroke(1)
 				rect(0, 0, this.scale, this.scale);
