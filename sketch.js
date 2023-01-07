@@ -33,7 +33,7 @@ function draw() {
 	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
 		player.shootSmallTentacle()
 	}
-	console.log(millis())
+	// console.log(millis())
 
 	background(255);
 
@@ -48,7 +48,7 @@ function draw() {
 
 	// camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
 	// plane(10, 10);
-
+	checkCollisions();
 	player.update()
 	camera.update(delta, player.position, player.velocity, 1.2);
 
@@ -76,6 +76,29 @@ function draw() {
 
 
 	// noLoop();
+}
+
+function checkCollisions(){
+	let any_collision = false
+	for(let i=0; i<map.width; i++)
+	{
+		for(let j=0; j<map.height; j++)
+		{
+			let tile = map.tiles[i][j];
+			if(tile instanceof Wall)
+			{
+				let x_overlaps = (player.position.x-player.size/2 < tile.location.x + tile.scale) && (player.position.x+player.size/2 > tile.location.x)
+				let y_overlaps = (player.position.y-player.size/2 < tile.location.y + tile.scale) && (player.position.y + player.size / 2 > tile.location.y)
+				let collision = x_overlaps && y_overlaps
+				if(collision)
+				{
+					player.velocity.setMag(0);
+					any_collision = true
+					return any_collision;
+				}
+			}
+		}
+	}
 }
 
 
