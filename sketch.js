@@ -1,7 +1,8 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
 
-// Create a 2D array to store the height values
+let blur = false;
+
 let map;
 
 let camera;
@@ -26,14 +27,21 @@ function draw() {
 
 	let delta = millis() - lastMillis;
 	lastMillis = millis();
-	background(255);
+
+	if(blur){
+		fill(255, 60)
+		rect(0, 0, width, height);
+	}else{
+		background(255);
+	}
+
 
 
 	// camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
 	// plane(10, 10);
 
 	player.update()
-	camera.update(delta, player.position, player.velocity);
+	camera.update(delta, player.position, player.velocity, 1.2);
 
 	// console.log(playerLocation, camera.location)
 	// push();
@@ -44,14 +52,19 @@ function draw() {
 			// fill(255)
 			// ellipseMode(CENTER)
 	// pop();
-	noFill();
-	stroke(0)
-	rect(0, 0, camera.width, camera.height);
-	line(width/2, 0, width/2, height)
-	line(0, height/2, width, height/2)
-	stroke(0, 255, 0)
-	text(Math.floor(frameRate()), 10, 380)
-	stroke(0)
+	// noFill();
+	// stroke(0)
+	// // rect(0, 0, camera.width, camera.height);
+	// line(width/2, 0, width/2, height)
+	// line(0, height/2, width, height/2)
+	if(frameCount % 5 === 0){
+		fill(255, 255, 0)
+		noStroke();
+		text(Math.floor(frameRate()), 10, 10)
+		stroke(0)
+	}
+
+
 
 	// noLoop();
 }

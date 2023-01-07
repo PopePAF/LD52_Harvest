@@ -52,10 +52,12 @@ class Map {
 	}
 
 	render(){
+		let wallTiles = this.tiles.filter(rows => rows.find(tile => tile instanceof Wall));
+
 		for (let x = 0; x < this.width; x++) {
 			for (let y = 0; y < this.height; y++) {
 				// Get the height value at this position
-				this.tiles[x][y].render();
+				wallTiles[x][y].render();
 			}
 		}
 	}
@@ -82,10 +84,8 @@ class Wall extends Tile {
 			push();
 				camera.translateToView();
 				translate(this.location.x, this.location.y);
-				// noFill();
-				fill(0)
-				// rectMode()
-				// stroke(1)
+				noStroke();
+				fill(0);
 				rect(0, 0, this.scale, this.scale);
 			pop();
 			// rect(this.location.x * this.scale, this.location.y * this.scale, this.scale, this.scale);
