@@ -31,12 +31,12 @@ class Player{
             this.applyForce(p5.Vector.sub(this.targetVector , this.position))
         }
 
+
         this.velocity.mult(this.friction)
 
 
         this.velocity.add(this.acc).limit(this.speedLimit)
         this.position.add(this.velocity)
-        console.log(this.velocity)
         this.acc.mult(0)
 
 
@@ -44,7 +44,7 @@ class Player{
     }
 
     shootTentacle(){
-        this.targetVector = createVector(mouseX, mouseY)
+        this.targetVector = createVector(mouseX + this.position.x - camera.offset.x, mouseY + this.position.y - camera.offset.y)
         this.activeTentacle = new Tentacle(this.position, this.targetVector, this.range)
         this.targetVector.sub(this.position).limit(this.range)
         this.targetVector.add(this.position)
@@ -56,7 +56,7 @@ class Player{
     }
 
     applyForce(force){
-        this.acc = force.copy().normalize()
+        this.acc.add(force.copy().normalize())
     }
 
 
