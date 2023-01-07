@@ -1,43 +1,29 @@
 // Set the dimensions of the map
+// import {UI} from "./src/utility/debugUiManager.js";
+
 const mapWidth = 100;
 const mapHeight = 100;
 
+let ui;
+
 // Set the scaling factor for the noise function
-let scaleSlider;
+
 let scale = 5;
 
 // Set the threshold for drawing cave structures
-let caveSlider;
+// let caveSlider;
 let caveThreshold = 128;
 
 // Create a 2D array to store the height values
 let map = [];
-let button;
 function setup() {
-	scaleSlider = createSlider(5, 50, 5);
-	scaleSlider.position(10, 25);
-	scaleSlider.style('width', '80px');
+	console.log("setup() run");
 
-	caveSlider = createSlider(0, 255, 100);
-	caveSlider.position(10, 50);
-	caveSlider.style('width', '80px');
+	ui = new UI();
 
-	button = createButton('refresh');
-	button.position(0, 0);
-	button.mousePressed(refreshMap);
-	refreshMap();
 	createCanvas(mapWidth * scale, mapHeight * scale);
 
-
-	// Generate the height values using noise()
-	// for (let x = 0; x < mapWidth; x++) {
-	// 	for (let y = 0; y < mapHeight; y++) {
-	// 		// Use noise() to generate a value between 0 and 1
-	// 		let noiseVal = noise(x / scale, y / scale);
-	// 		// Scale the noise value to a range between 0 and 255
-	// 		heights[x][y] = noiseVal * 255;
-	// 	}
-	// }
+	refreshMap();
 }
 
 function refreshMap(){
@@ -56,15 +42,15 @@ function refreshMap(){
 			map[x][y] = noiseVal * 255;
 		}
 	}
+	console.log("test");
 }
 
 function draw() {
+
 	frameRate(1);
-
-	scale = scaleSlider.value();
-	caveThreshold = caveSlider.value();
-
 	background(0);
+
+	updateUiValues();
 
 	// Loop through the height values and draw the map
 	for (let x = 0; x < mapWidth; x++) {
@@ -82,4 +68,9 @@ function draw() {
 		}
 	}
 	// noLoop();
+}
+
+function updateUiValues(){
+	scale 		  = ui.getScaleValue();
+	caveThreshold = ui.getCaveThresholdValue();
 }
