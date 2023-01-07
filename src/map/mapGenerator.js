@@ -84,7 +84,7 @@ class Wall extends Tile {
 				translate(this.location.x, this.location.y);
 				// noFill();
 				fill(0)
-				rectMode(CENTER)
+				// rectMode()
 				// stroke(1)
 				rect(0, 0, this.scale, this.scale);
 			pop();
