@@ -56,7 +56,7 @@ class Tile {
 	scale;
 
 	constructor(x, y, scale, noiseValue) {
-		this.location = createVector(x, y);
+		this.location = createVector(x*scale, y*scale);
 		this.noiseValue = noiseValue;
 		this.scale = scale;
 	}
@@ -66,10 +66,20 @@ class Tile {
 
 class Wall extends Tile {
 	render(){
-		noFill();
-		rectMode(CENTER)
-		// stroke(1)
-		rect(this.location.x * this.scale, this.location.y * this.scale, this.scale, this.scale);
+		if(camera.vectorInView(this.location)){
+			push();
+				camera.translateToView();
+				translate(this.location.x, this.location.y);
+				noFill();
+				rectMode(CENTER)
+				// stroke(1)
+				rect(0, 0, this.scale, this.scale);
+			pop();
+			// rect(this.location.x * this.scale, this.location.y * this.scale, this.scale, this.scale);
+		}else{
+			console.log("not in view");
+		}
+
 	}
 }
 
