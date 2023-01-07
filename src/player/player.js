@@ -46,6 +46,10 @@ class Player{
 
     }
 
+    checkColission(){
+        map.get
+    }
+
     shootTentacle(){
         this.targetVector = createVector(mouseX + this.position.x - camera.offset.x, mouseY + this.position.y - camera.offset.y)
         this.activeTentacle = new Tentacle(this.position, this.targetVector, this.range)

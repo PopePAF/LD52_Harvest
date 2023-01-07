@@ -52,16 +52,37 @@ class Map {
 	}
 
 	render(){
-		let wallTiles = this.tiles.filter(rows => rows.find(tile => tile instanceof Wall));
+		// for (let x = 0; x < this.width; x++) {
+		// 	for (let y = 0; y < this.height; y++) {
+		// 		// Get the height value at this position
+		// 		let tile = this.tiles[x][y];
+		// 		if(tile instanceof Wall){
+		// 			tile.render();
+		// 		}
+		//
+		// 	}
+		// }
 
-		for (let x = 0; x < this.width; x++) {
-			for (let y = 0; y < this.height; y++) {
-				// Get the height value at this position
-				wallTiles[x][y].render();
-			}
+		let walls = this.getWalls();
+		for(let i = 0; i < walls.length; i++){
+			walls[i].render();
 		}
 	}
 
+	getWalls(){
+		let walls = [];
+		for (let x = 0; x < this.width; x++) {
+			for (let y = 0; y < this.height; y++) {
+				// Get the height value at this position
+				let tile = this.tiles[x][y];
+				if(tile instanceof Wall){
+					walls.push(tile);
+				}
+			}
+		}
+
+		return walls;
+	}
 }
 
 class Tile {
@@ -85,18 +106,13 @@ class Wall extends Tile {
 				camera.translateToView();
 				translate(this.location.x, this.location.y);
 				noStroke();
-				fill(0);
+				fill(0, 0, 0)
 				rect(0, 0, this.scale, this.scale);
 			pop();
-			// rect(this.location.x * this.scale, this.location.y * this.scale, this.scale, this.scale);
-		}else{
-
 		}
-
 	}
 }
 
 class Empty extends Tile {
-	render(){
-	}
+	render(){}
 }
