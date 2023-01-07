@@ -2,14 +2,14 @@ class Player{
 
     constructor(initPos) {
         this.position = createVector(initPos.x, initPos.y);
-        this.size = 5
+        this.size = 10
         this.color = color(255, 0, 0)
         this.activeTentacle = null
         this.velocity = createVector()
         this.acc = createVector()
-        this.friction = 0.92
-        this.range = 50
-        this.speedLimit = 1
+        this.friction = 0.04
+        this.range = 150
+        this.speedLimit = 600000
         this.targetVector = createVector(initPos.x, initPos.y)
     }
 
@@ -27,12 +27,15 @@ class Player{
     }
 
     update(){
+        let frictionMultiplier = 1;
         if (this.activeTentacle){
             this.applyForce(p5.Vector.sub(this.targetVector , this.position))
+            frictionMultiplier = 0.3
+
         }
 
+        this.velocity.mult(1 - this.friction * frictionMultiplier)
 
-        this.velocity.mult(this.friction)
 
 
         this.velocity.add(this.acc).limit(this.speedLimit)
@@ -65,14 +68,19 @@ class Player{
 class Tentacle{
 
     constructor(startPos, target, range) {
+        this.lengthMultiplier = 0
         this.startPos = startPos
         this.endPos = this.startPos.copy().add(target.copy().sub(this.startPos).limit(range))
         this.color = color(255, 100, 100)
     }
 
     draw(){
-        fill(this.color)
-        line(this.startPos.x, this.startPos.y, this.endPos.x, this.endPos.y)
+        if (this.lengthMultiplier < 1){
+            this.lengthMultiplier += 0.1
+        }
+        stroke(this.color)
+        strokeWeight(4)
+        line(this.startPos.x, this.startPos.y, this.startPos.x + ((this.endPos.x - this.startPos.x) * this.lengthMultiplier), this.startPos.y + ((this.endPos.y - this.startPos.y) * this.lengthMultiplier))
     }
 
 }

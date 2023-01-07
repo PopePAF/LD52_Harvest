@@ -13,13 +13,13 @@ let player
 let noise;
 
 function setup() {
-	createCanvas(400, 400);
+	createCanvas(600, 600);
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
-	map = new Map(100, 100, 4, 20)
+	map = new Map(300, 300, 16, 20)
 	player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
-	frameRate(5)
+	frameRate(60)
 }
 
 function draw() {
@@ -27,11 +27,7 @@ function draw() {
 	let delta = millis() - lastMillis;
 	lastMillis = millis();
 	background(255);
-	noFill();
-	stroke(0)
-	rect(0, 0, camera.width, camera.height);
-	line(width/2, 0, width/2, height)
-	line(0, height/2, width, height/2)
+
 
 	// camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
 	// plane(10, 10);
@@ -48,7 +44,14 @@ function draw() {
 			// fill(255)
 			// ellipseMode(CENTER)
 	// pop();
-
+	noFill();
+	stroke(0)
+	rect(0, 0, camera.width, camera.height);
+	line(width/2, 0, width/2, height)
+	line(0, height/2, width, height/2)
+	stroke(0, 255, 0)
+	text(Math.floor(frameRate()), 10, 380)
+	stroke(0)
 
 	// noLoop();
 }
@@ -64,6 +67,8 @@ function keyPressed(){
 function mousePressed(e){
 	if (e.button === 0){
 		player.shootTentacle()
+	}else if(e.button === 2){
+		player.releaseTentacle()
 	}
 
 }
