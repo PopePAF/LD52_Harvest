@@ -77,7 +77,7 @@ class Wall extends Tile {
 			pop();
 			// rect(this.location.x * this.scale, this.location.y * this.scale, this.scale, this.scale);
 		}else{
-			console.log("not in view");
+
 		}
 
 	}

@@ -2,23 +2,28 @@ class Player{
 
     constructor(initPos) {
         this.position = createVector(initPos.x, initPos.y);
-        this.size = 20
+        this.size = 5
         this.color = color(255, 0, 0)
         this.activeTentacle = null
         this.velocity = createVector()
         this.acc = createVector()
-        this.friction = 0.95
-        this.range = 150
-        this.speedLimit = 20
+        this.friction = 0.92
+        this.range = 50
+        this.speedLimit = 1
         this.targetVector = createVector(initPos.x, initPos.y)
     }
 
     draw(){
-        fill(this.color)
-        square(this.position.x - this.size / 2, this.position.y - this.size / 2, this.size)
-        if (this.activeTentacle){
-            this.activeTentacle.draw()
-        }
+        push()
+            camera.translateToView()
+            //translate(this.position.x, this.position.y);
+            fill(this.color)
+            rectMode(CENTER)
+            square(this.position.x, this.position.y, this.size)
+            if (this.activeTentacle){
+                this.activeTentacle.draw()
+            }
+        pop()
     }
 
     update(){

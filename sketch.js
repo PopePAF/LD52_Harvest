@@ -1,8 +1,6 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
 
-let ui;
-
 // Create a 2D array to store the height values
 let map;
 
@@ -14,7 +12,10 @@ let player
 
 function setup() {
 	createCanvas(400, 400);
-	player = new Player({x: width/2, y:height/2})
+
+	camera = new View(0, 0, width, height)
+	map = new Map(200, 200, 5, 110)
+	player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
 	frameRate(5)
 }
@@ -34,14 +35,13 @@ function draw() {
 	// camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
 	// plane(10, 10);
 
-	updateUiValues();
 	player.update()
 	camera.update(delta, player.position, player.velocity);
 
 	// console.log(playerLocation, camera.location)
 	// push();
 	// 		ellipse(playerLocation.x, playerLocation.y, 10, 10)
-			// scale(1.5)
+			//scale(1.5)
 			map.render();
 			player.draw()
 			// fill(255)
@@ -52,10 +52,7 @@ function draw() {
 	// noLoop();
 }
 
-function updateUiValues(){
-	map.scale 		  = ui.getScaleValue();
-	map.caveThreshold = ui.getCaveThresholdValue();
-}
+
 
 function keyPressed(){
 	if (keyCode === 82) { // 82 is the key code for "r"
