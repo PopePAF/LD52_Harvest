@@ -19,7 +19,6 @@ function setup() {
 	camera = new View(0, 0, width, height)
 	map = new Map(300, 300, 16, 20)
 	player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
-
 	frameRate(60)
 }
 
@@ -27,6 +26,16 @@ function draw() {
 
 	let delta = millis() - lastMillis;
 	lastMillis = millis();
+
+	if (player.tentacles.smallOne && millis() % 1000 <= 50 && !(millis() % 3000 <= 50)){
+		player.releaseSmallTentacle()
+
+	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
+		player.shootSmallTentacle()
+	}
+	console.log(millis())
+
+	background(255);
 
 	if(blur){
 		fill(255, 60)

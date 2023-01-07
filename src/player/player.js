@@ -4,13 +4,14 @@ class Player{
         this.position = createVector(initPos.x, initPos.y);
         this.size = 10
         this.color = color(255, 0, 0)
-        this.activeTentacle = null
         this.velocity = createVector()
         this.acc = createVector()
         this.friction = 0.04
         this.range = 150
         this.speedLimit = 600000
         this.targetVector = createVector(initPos.x, initPos.y)
+        this.tentacles = {main: null, smallOne: null}
+        this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
     }
 
     draw(){
@@ -20,19 +21,25 @@ class Player{
             fill(this.color)
             rectMode(CENTER)
             square(this.position.x, this.position.y, this.size)
-            if (this.activeTentacle){
-                this.activeTentacle.draw()
+            if (this.tentacles.main){
+                this.tentacles.main.draw()
+            }
+            if (this.tentacles.smallOne){
+                this.tentacles.smallOne.draw()
             }
         pop()
     }
 
     update(){
         let frictionMultiplier = 1;
-        if (this.activeTentacle){
-            this.applyForce(p5.Vector.sub(this.targetVector , this.position))
+        if (this.tentacles.main && this.tentacles.main.ready){
+            this.applyForce(p5.Vector.sub(this.targetVector , this.position), 1)
             frictionMultiplier = 0.3
-
         }
+        if (this.tentacles.smallOne){
+            this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05)
+        }
+
 
         this.velocity.mult(1 - this.friction * frictionMultiplier)
 
@@ -41,6 +48,10 @@ class Player{
         this.velocity.add(this.acc).limit(this.speedLimit)
         this.position.add(this.velocity)
         this.acc.mult(0)
+
+        if (p5.Vector.sub(this.targetVectorSmallOne , this.position).mag() > 60){
+            this.releaseSmallTentacle()
+        }
 
 
 
@@ -52,18 +63,29 @@ class Player{
 
     shootTentacle(){
         this.targetVector = createVector(mouseX + this.position.x - camera.offset.x, mouseY + this.position.y - camera.offset.y)
-        this.activeTentacle = new Tentacle(this.position, this.targetVector, this.range)
+        this.tentacles.main = new Tentacle(this.position, this.targetVector, this.range)
         this.targetVector.sub(this.position).limit(this.range)
         this.targetVector.add(this.position)
     }
 
     releaseTentacle(){
-        this.activeTentacle = null
+        this.tentacles.main = null
         this.targetVector = this.position
     }
 
-    applyForce(force){
-        this.acc.add(force.copy().normalize())
+    shootSmallTentacle(){
+        this.targetVectorSmallOne = this.position.copy().add(p5.Vector.fromAngle(radians(Math.floor(Math.random() * 361)), 30))
+        this.tentacles.smallOne = new Tentacle(this.position, this.targetVectorSmallOne, 30)
+    }
+
+    releaseSmallTentacle(){
+        this.tentacles.smallOne = null
+        this.targetVectorSmallOne = this.position
+
+    }
+
+    applyForce(force, multiplier){
+        this.acc.add(force.copy().normalize().mult(multiplier))
     }
 
 
@@ -73,6 +95,7 @@ class Tentacle{
 
     constructor(startPos, target, range) {
         this.lengthMultiplier = 0
+        this.ready = false
         this.startPos = startPos
         this.endPos = this.startPos.copy().add(target.copy().sub(this.startPos).limit(range))
         this.color = color(255, 100, 100)
@@ -80,7 +103,10 @@ class Tentacle{
 
     draw(){
         if (this.lengthMultiplier < 1){
-            this.lengthMultiplier += 0.1
+            this.lengthMultiplier += 0.15
+        }
+        else{
+            this.ready = true
         }
         stroke(this.color)
         strokeWeight(4)
