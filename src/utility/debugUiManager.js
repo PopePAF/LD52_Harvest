@@ -5,7 +5,7 @@ class UI {
 	refreshButton;
 
 
-	constructor() {
+	constructor(map) {
 		this.scaleSlider = createSlider(5, 50, 5);
 		this.scaleSlider.position(10, 25);
 		this.scaleSlider.style('width', '80px');
@@ -16,7 +16,7 @@ class UI {
 
 		this.refreshButton = createButton('refresh');
 		this.refreshButton.position(0, 0);
-		this.refreshButton.mousePressed(refreshMap);
+		this.refreshButton.mousePressed(map.refresh);
 	}
 
 	getScaleValue(){
