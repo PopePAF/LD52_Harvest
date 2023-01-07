@@ -25,10 +25,10 @@ class View {
 		this.offset = createVector(this.width/2, this.height/2);
 }
 
- update(delta, location, velocity) {
+ update(delta, location, velocity, offsetFactor=1) {
 		this.location = location;
-		//this.offset.set(this.width/2 - velocity.x * this.width/4, this.height/2 - velocity.y * this.height/4, 0);
-	 this.offset.set(this.width/2, this.height/2, 0);
+		// this.offset.set(this.width/2 - velocity.x * this.width/4, this.height/2 - velocity.y * this.height/4, 0);
+	 	this.offset.set(this.width/2 - velocity.x * offsetFactor, this.height/2 - velocity.y * offsetFactor, 0);
 	}
 
 	vectorInView(v) {
