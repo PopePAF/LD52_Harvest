@@ -50,10 +50,10 @@ class Player{
         this.velocity.add(this.acc).limit(this.speedLimit)
 
         this.position.add(this.velocity)
-        if (this.position.x > map2.width - this.size || this.position.x < this.size) {
+        if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
             this.velocity.x *= -1;
         }
-        if (this.position.y > map2.height - this.size || this.position.y < this.size) {
+        if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2) {
             this.velocity.y *= -1;
         }
         this.acc.mult(0)
