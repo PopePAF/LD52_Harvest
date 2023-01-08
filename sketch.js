@@ -11,6 +11,12 @@ let player
 
 let noise;
 
+let imgs = [];
+
+function preload(){
+
+}
+
 function setup() {
 	createCanvas(600, 600, WEBGL);
 	noise = new OpenSimplexNoise(Date.now());

@@ -22,11 +22,7 @@ class Player{
             //translate(this.position.x, this.position.y);
             this.particleRenderer.drawParticles()
             fill(this.color)
-            noStroke();
-            // stroke(this.color);
-            // rectMode(CENTER)
-            ellipse(this.position.x, this.position.y, this.size)
-            // square(this.position.x, this.position.y, this.size)
+            circle(this.position.x, this.position.y, this.size)
             if (this.tentacles.main){
                 this.tentacles.main.draw()
             }
@@ -59,6 +55,10 @@ class Player{
 
     applyForce(force, multiplier){
         this.acc.add(force.copy().normalize().mult(multiplier))
+    }
+
+    checkColission(){
+        map.get
     }
 
     shootTentacle(){
