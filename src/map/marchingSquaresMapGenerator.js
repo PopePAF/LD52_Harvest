@@ -111,11 +111,17 @@ class MarchingSquaresMapGenerator{
 				for (let b of this.bubbles) {
 					bubbleShine += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
 				}
-				let shadowRadius = player.size * 3;
-				let playerShadow = (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
 
+				let shadowRadius = player.size * 5;
+				let playerShadow = 0;
+				if(this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1){
+
+					 playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
+
+				}
 				let noiseValue = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine
 				noiseValue = constrain(noiseValue, -1, 1)
+
 				this.field[i][j] = noiseValue;
 				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
 				yoff += this.increment;
@@ -251,6 +257,17 @@ class MarchingSquaresMapGenerator{
 				}
 			}
 		}
+	}
+
+	checkpointInElippse(h , k , x , y , a , b)
+	{
+
+		// checking the equation of
+		// ellipse with the given point
+		let p = Math.pow((x - h), 2) / Math.pow(a, 2)
+			+ Math.pow((y - k), 2) / Math.pow(b, 2);
+
+		return p;
 	}
 
 	getState(a, b, c, d) {
