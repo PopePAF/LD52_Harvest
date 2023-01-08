@@ -7,7 +7,7 @@ class FleshPlant extends Tile{
             //translate(this.location.x, this.location.y);
             noStroke();
             fill(255,100,100)
-            circle(this.location.x, this.location.y, this.scale)
+            circle(this.location.x + this.scale/2, this.location.y + this.scale/2, this.scale)
             pop();
         }
 

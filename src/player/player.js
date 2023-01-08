@@ -22,8 +22,7 @@ class Player{
             //translate(this.position.x, this.position.y);
             this.particleRenderer.drawParticles()
             fill(this.color)
-            rectMode(CENTER)
-            square(this.position.x, this.position.y, this.size)
+            circle(this.position.x, this.position.y, this.size)
             if (this.tentacles.main){
                 this.tentacles.main.draw()
             }
