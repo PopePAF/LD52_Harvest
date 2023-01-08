@@ -12,6 +12,8 @@ class Bubble {
 		this.position = position;
 		this.friction = 0.02
 		this.maxSpeed = 40
+		this.charge = 0
+		this.disChargeRate = 0.02
 	}
 
 	show() {
@@ -50,6 +52,24 @@ class Bubble {
 					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
 				}
 			}
+		}
+
+		for (let bubbleC of map2.bubbleCollectibles){
+			let distance = p5.Vector.sub(bubbleC.position, this.position)
+			if (distance.mag() <= this.r + bubbleC.r){
+				this.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(2))
+				bubbleC.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(4).mult(3))
+
+				this.velocity.limit(this.maxSpeed)
+
+				this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
+			}
+
+
+		}
+
+		if (this.charge > 0){
+			this.charge -= this.disChargeRate
 		}
 
 

@@ -16,6 +16,7 @@ class MarchingSquaresMapGenerator{
 
 
 	bubbles = [];
+	bubbleCollectibles = [];
 
 
 	constructor(_width, _height, _rez, _lerp, _bubbleCount) {
@@ -50,10 +51,19 @@ class MarchingSquaresMapGenerator{
 						spaceOccupied = true;
 					}
 				}
+				for(let bubbleC of this.bubbleCollectibles){
+					if(this.checkCircleColission(position, r, bubbleC.position, bubbleC.r)){
+						spaceOccupied = true;
+					}
+				}
 			}while(spaceOccupied);
 
 
 			this.bubbles.push(new Bubble(position, r));
+		}
+
+		for (let i=0; i < 5; i++){
+			this.placeBubbleCollectible()
 		}
 
 
@@ -62,6 +72,32 @@ class MarchingSquaresMapGenerator{
 	checkCircleColission(position1, r1, position2, r2){
 			let distance = p5.Vector.sub(position1, position2).mag()
 			return distance <= r2 + r1;
+
+	}
+
+	placeBubbleCollectible(){
+		let spaceOccupied = false;
+		let r;
+		let position;
+
+		do{
+			spaceOccupied = false;
+			r = random(10, 20);
+			position = createVector(random(r, width - r), random(r, height - r));
+			for(let bubble of this.bubbles){
+				if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
+					spaceOccupied = true;
+				}
+			}
+			for(let bubbleC of this.bubbleCollectibles){
+				if(this.checkCircleColission(position, r, bubbleC.position, bubbleC.r)){
+					spaceOccupied = true;
+				}
+			}
+		}while(spaceOccupied);
+
+
+		this.bubbleCollectibles.push(new BubbleCollectible(position, r));
 
 	}
 
@@ -105,12 +141,29 @@ class MarchingSquaresMapGenerator{
 			let yoff = 0;
 			for (let j = 0; j < this.rows; j++) {
 				let sum = 0;
+				let charge = 0;
+				let greenSum = 0;
 				let x = i * this.rez;
 				let y = j * this.rez;
 				for (let b of this.bubbles) {
 					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
+					if (b.charge > charge && b.r * b.r > ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y))){
+						charge = b.charge
+					}
 				}
-				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum;
+				for (let bC of this.bubbleCollectibles){
+					greenSum += (bC.r * bC.r) / ((x - bC.position.x) * (x - bC.position.x) + (y - bC.position.y) * (y - bC.position.y));
+				}
+				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum + greenSum
+
+				if (greenSum > 0.3){
+					this.field[i][j] = {color: color(0, noiseVal * 255, 0), noiseVal: noiseVal}
+				}else{
+					this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150)), noiseVal: noiseVal}
+				}
+				//this.field[i][j] = {noiseVal: float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum, charge: charge}
+
+
 				yoff += this.increment;
 			}
 		}
@@ -120,20 +173,23 @@ class MarchingSquaresMapGenerator{
 			b.update();
 			b.show();
 		}
+		for (let bC of this.bubbleCollectibles){
+			bC.update()
+		}
 
 		for (let i = 0; i < this.cols - 1; i++) {
 			for (let j = 0; j < this.rows - 1; j++) {
 				let x = i * this.rez;
 				let y = j * this.rez;
 
-				let noiseVal = this.field[i][j];
+				let noiseVal = this.field[i][j].noiseVal;
 				// if(noiseVal<0){
 				// 	let currentColor = color(0, this.field[i][j] * -255, 0);
 				// 	this.drawEllipse(x, y, this.rez,currentColor);
 				// }
 
 				if(noiseVal > 0.4){
-					let currentColor = color(this.field[i][j] * 255, 0, 0);
+					let currentColor = this.field[i][j].color
 					this.drawEllipse(x, y, this.rez,currentColor);
 				}
 

@@ -98,6 +98,17 @@ class Player{
                 bubble.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
                 bubble.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
                 bubble.velocity.limit(bubble.maxSpeed)
+                if (bubble.velocity.mag() > 5){
+                    bubble.charge = 1
+                }
+            }
+        }
+        for (let bubbleC of map2.bubbleCollectibles){
+            let distance = p5.Vector.sub(this.position, bubbleC.position).mag()
+            if (distance <= bubbleC.r){
+                bubbleC.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
+                bubbleC.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
+                bubbleC.velocity.limit(bubbleC.maxSpeed)
             }
         }
     }

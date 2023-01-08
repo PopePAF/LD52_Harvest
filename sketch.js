@@ -72,6 +72,11 @@ function draw() {
 		// text(Math.floor(frameRate()), 10, 10)
 		// stroke(0)
 	}
+
+	stroke(255)
+	noFill()
+	rect(0, 0, width, height, 10)
+	stroke(255,0,0)
 }
 
 function checkCollisions(){
