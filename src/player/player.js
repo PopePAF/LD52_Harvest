@@ -12,7 +12,7 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
-        this.particleRenderer = new FleshParticles(10, 5000, 1, 500, this.position, this.size/2, this.size/2)
+        this.health = 3
     }
 
     draw(){
@@ -20,7 +20,6 @@ class Player{
         push()
             camera.translateToView()
             //translate(this.position.x, this.position.y);
-            this.particleRenderer.drawParticles()
             fill(this.color)
             circle(this.position.x, this.position.y, this.size)
             if (this.tentacles.main){
@@ -51,6 +50,9 @@ class Player{
         if (p5.Vector.sub(this.targetVectorSmallOne , this.position).mag() > 60){
             this.releaseSmallTentacle()
         }
+
+        this.checkForBubbleCollision()
+
     }
 
     applyForce(force, multiplier){
@@ -83,6 +85,15 @@ class Player{
         this.targetVectorSmallOne = this.position
     }
 
+    checkForBubbleCollision(){
+        for (let bubble of map2.bubbles){
+            let bubblePos = createVector(bubble.x, bubble.y)
+            let distance = p5.Vector.sub(this.position, bubblePos).mag()
+            if (distance <= bubble.r){
+                console.log('collision')
+            }
+        }
+    }
 
 
 

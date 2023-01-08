@@ -14,18 +14,18 @@ class Bubble {
 	}
 
 	show() {
-		if(!camera.pointInView(this.x, this.y)) {
-			return;
-		}
-
-		push()
+		if(camera.pointInView(this.x + this.r, this.y) || camera.pointInView(this.x - this.r, this.y) || camera.pointInView(this.x, this.y + this.r) || camera.pointInView(this.x, this.y - this.r)) {
+			push()
 			camera.translateToView();
 			noFill();
 			stroke(255);
 			fill(255, 50);
 			strokeWeight(1);
 			circle(this.x, this.y, this.r * 2);
-		pop();
+			pop();
+		}
+
+
 
 	}
 

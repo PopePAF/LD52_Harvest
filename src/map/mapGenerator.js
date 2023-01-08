@@ -48,7 +48,6 @@ class Map {
 			}
 		}
 		this.solidBorder();
-		this.genCollectibles();
 		// console.log("refresh", this.tiles);
 	}
 
@@ -65,12 +64,9 @@ class Map {
 		// }
 
 		let walls = this.getWalls();
-		let collectibles = this.getCollectibles();
+
 		for(let i = 0; i < walls.length; i++){
 			walls[i].render();
-		}
-		for (let i=0; i < collectibles.length; i++){
-			collectibles[i].render()
 		}
 	}
 
@@ -89,42 +85,6 @@ class Map {
 		return walls;
 	}
 
-	getCollectibles(){
-		let collectibles = [];
-		for (let x = 0; x < this.width; x++) {
-			for (let y = 0; y < this.height; y++) {
-				// Get the height value at this position
-				let tile = this.tiles[x][y];
-				if(tile instanceof FleshPlant){
-					collectibles.push(tile);
-				}
-			}
-		}
-		//console.log(collectibles)
-		return collectibles;
-	}
-
-	genCollectibles(){
-		let empties = [];
-		for (let x = 0; x < this.width; x++) {
-			for (let y = 0; y < this.height; y++) {
-				// Get the height value at this position
-				let tile = this.tiles[x][y];
-				if(tile instanceof Empty){
-					empties.push(tile);
-				}
-			}
-		}
-
-		for (let i=0; i<100; i++){
-			let randomEmpty = empties[Math.floor(Math.random() * empties.length)]
-			this.tiles[randomEmpty.location.x / randomEmpty.scale][randomEmpty.location.y / randomEmpty.scale] = new FleshPlant(randomEmpty.location.x / randomEmpty.scale, randomEmpty.location.y / randomEmpty.scale, this.scale, randomEmpty.noiseValue)
-			empties.splice(empties.indexOf(randomEmpty), 1)
-			console.log(this.tiles[randomEmpty.location.x / randomEmpty.scale][randomEmpty.location.y / randomEmpty.scale])
-		}
-
-
-	}
 }
 
 class Tile {
