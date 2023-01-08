@@ -54,8 +54,15 @@ class MarchingSquaresMapGenerator{
 
 	}
 
+	displayBorders(){
+		push();
+			camera.translateToView();
+			noFill();
+			rect(0, 0, this.width, this.height);
+		pop();
+	}
 	display(){
-
+		this.displayBorders();
 		let xoff = 0;
 		for (let i = 0; i < this.cols; i++) {
 			xoff += this.increment;

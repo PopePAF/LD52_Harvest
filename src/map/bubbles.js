@@ -22,7 +22,7 @@ class Bubble {
 			camera.translateToView();
 			noFill();
 			stroke(255);
-			fill(255, 50);
+			// fill(255, 50);
 			strokeWeight(1);
 			circle(this.x, this.y, this.r * 2);
 		pop();

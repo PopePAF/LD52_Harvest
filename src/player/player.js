@@ -45,7 +45,14 @@ class Player{
         this.velocity.mult(1 - this.friction * frictionMultiplier)
 
         this.velocity.add(this.acc).limit(this.speedLimit)
+
         this.position.add(this.velocity)
+        if (this.position.x > map2.width - this.size || this.position.x < this.size) {
+            this.velocity.x *= -1;
+        }
+        if (this.position.y > map2.height - this.size || this.position.y < this.size) {
+            this.velocity.y *= -1;
+        }
         this.acc.mult(0)
 
         if (p5.Vector.sub(this.targetVectorSmallOne , this.position).mag() > 60){
