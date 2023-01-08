@@ -104,13 +104,16 @@ class MarchingSquaresMapGenerator{
 			xoff += this.increment;
 			let yoff = 0;
 			for (let j = 0; j < this.rows; j++) {
-				let sum = 0;
 				let x = i * this.rez;
 				let y = j * this.rez;
+				let bubbleShine = 0;
 				for (let b of this.bubbles) {
-					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
+					bubbleShine += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
 				}
-				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum;
+				let shadowRadius = player.size * 3;
+				let playerShadow = (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
+				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine;
+				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
 				yoff += this.increment;
 			}
 		}

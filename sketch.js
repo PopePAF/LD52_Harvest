@@ -13,7 +13,7 @@ let noise;
 
 let imgs = [];
 
-let webglOn = false;
+let webglOn = true;
 
 function preload(){
 
