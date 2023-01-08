@@ -28,7 +28,8 @@ class Bubble {
 	}
 
 	update() {
-		this.position.add(this.velocity.copy().mult(this.direction.copy()))
+		// todo: fix this mult takes number "direction should really be just a starting direction the later direction will be the angle of velocity vector)
+		this.position.add(this.velocity.copy().mult(this.direction.copy()));
 
 		if(this.velocity.x > 1){
 			this.velocity.x *= (1-this.friction)
