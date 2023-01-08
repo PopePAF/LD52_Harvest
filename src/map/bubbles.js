@@ -57,12 +57,21 @@ class Bubble {
 		for (let bubbleC of map2.bubbleCollectibles){
 			let distance = p5.Vector.sub(bubbleC.position, this.position)
 			if (distance.mag() <= this.r + bubbleC.r){
-				this.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(2))
-				bubbleC.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(4).mult(3))
+				if (this.charge > 0){
+					map2.bubbleCollectibles.splice(map2.bubbleCollectibles.indexOf(bubbleC), 1)
+					map2.placeBubbleCollectible()
+					if(player.healthPerc < 1){
+						player.healthPerc += 0.2
+					}
+					score += 200
+				}else {
+					this.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(2))
+					bubbleC.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(4).mult(3))
 
-				this.velocity.limit(this.maxSpeed)
+					this.velocity.limit(this.maxSpeed)
 
-				this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
+					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
+				}
 			}
 
 
