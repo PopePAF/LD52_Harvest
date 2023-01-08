@@ -13,6 +13,12 @@ let player
 
 let noise;
 
+let imgs = [];
+
+function preload(){
+
+}
+
 function setup() {
 	createCanvas(600, 600);
 	noise = new OpenSimplexNoise(Date.now());
