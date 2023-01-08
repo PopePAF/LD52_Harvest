@@ -44,6 +44,10 @@ class View {
 		return false;
 	}
 
+	lineInView(x1, y1, x2, y2){
+		return this.pointInView(x1, y1) || this.pointInView(x2, y2);
+	}
+
 
 	rectInView(x, y, w,  h) {
 		return this.pointInView(x, y) || this.pointInView(x + w, y) || this.pointInView(x, y + h) || this.pointInView(x + w, y + h);

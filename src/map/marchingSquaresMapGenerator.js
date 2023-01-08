@@ -8,15 +8,15 @@ class MarchingSquaresMapGenerator{
 	zoff = 0;
 	noise;
 
+	lerp = true;
 
-	constructor(_rows, _cols, _rez) {
-		this.rows = _rows;
-		this.cols = _cols;
+
+	constructor(_width, _height, _rez) {
 		this.rez = _rez;
 
-		noise = new OpenSimplexNoise(Date.now());
-		this.cols = 1 + width / this.rez;
-		this.rows = 1 + height / this.rez;
+		this.noise = new OpenSimplexNoise(Date.now());
+		this.cols = 1 + _width / this.rez;
+		this.rows = 1 + _height / this.rez;
 		for (let i = 0; i < this.cols; i++) {
 			let k = [];
 			for (let j = 0; j < this.rows; j++) {
@@ -24,28 +24,41 @@ class MarchingSquaresMapGenerator{
 			}
 			this.field.push(k);
 		}
-	}
 
-	drawLine(v1, v2) {
-		line(v1.x, v1.y, v2.x, v2.y);
-	}
-
-	display(){
 		let xoff = 0;
 		for (let i = 0; i < this.cols; i++) {
 			xoff += this.increment;
 			let yoff = 0;
 			for (let j = 0; j < this.rows; j++) {
-				this.field[i][j] = float(noise.noise3D(xoff, yoff, this.zoff));
+				this.field[i][j] = float(this.noise.noise2D(xoff, yoff));
 				yoff += this.increment;
 			}
 		}
-		this.zoff += 0.02;
+	}
 
+	drawLine(v1, v2) {
+		// console.log("drowing line?")
+		if(camera.lineInView(v1.x, v1.y, v2.x, v2.y)){
+			// console.log("line in view")
+			push();
+				camera.translateToView();
+				stroke(255)
+				strokeWeight(1)
+				line(v1.x, v1.y, v2.x, v2.y);
+			pop();
+		}
+
+	}
+
+	display(){
 		for (let i = 0; i < this.cols - 1; i++) {
 			for (let j = 0; j < this.rows - 1; j++) {
 				let x = i * this.rez;
 				let y = j * this.rez;
+
+				if(!camera.pointInView(x, y)){
+					continue;
+				}
 
 				let state = this.getState(
 					ceil(this.field[i][j]),
@@ -60,24 +73,42 @@ class MarchingSquaresMapGenerator{
 				let d_val = this.field[i][j + 1] + 1;
 
 				let a = createVector();
-				let amt = (1 - a_val) / (b_val - a_val);
-				a.x = lerp(x, x + this.rez, amt);
+				let amt;
+
+				if(this.lerp){
+					amt = (1 - a_val) / (b_val - a_val);
+					a.x = lerp(x, x + this.rez, amt);
+				}else{
+					a.x = x;
+				}
 				a.y = y;
 
 				let b = createVector();
-				amt = (1 - b_val) / (c_val - b_val);
+				if(this.lerp){
+					amt = (1 - b_val) / (c_val - b_val);
+					b.y = lerp(y, y + this.rez, amt);
+				}else{
+					b.y = y;
+				}
 				b.x = x + this.rez;
-				b.y = lerp(y, y + this.rez, amt);
 
 				let c = createVector();
-				amt = (1 - d_val) / (c_val - d_val);
-				c.x = lerp(x, x + this.rez, amt);
+				if(this.lerp){
+					amt = (1 - d_val) / (c_val - d_val);
+					c.x = lerp(x, x + this.rez, amt);
+				}else{
+					c.x = x;
+				}
 				c.y = y + this.rez;
 
 				let d = createVector();
-				amt = (1 - a_val) / (d_val - a_val);
+				if(this.lerp){
+					amt = (1 - a_val) / (d_val - a_val);
+					d.y = lerp(y, y + this.rez, amt);
+				}else{
+					d.y = y;
+				}
 				d.x = x;
-				d.y = lerp(y, y + this.rez, amt);
 
 				stroke(255);
 				strokeWeight(2);

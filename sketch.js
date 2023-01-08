@@ -4,6 +4,7 @@
 let blur = false;
 
 let map;
+let map2;
 
 let camera;
 
@@ -14,11 +15,13 @@ let player
 let noise;
 
 function setup() {
-	createCanvas(600, 600);
+	createCanvas(600, 600, WEBGL);
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
-	map = new Map(300, 300, 16, 20)
-	player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
+	// map = new Map(300, 300, 16, 20)
+	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 10);
+	// player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
+	player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
 	frameRate(60)
 }
 
@@ -33,44 +36,38 @@ function draw() {
 	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
 		player.shootSmallTentacle()
 	}
-	// console.log(millis())
-
-	background(255);
 
 	if(blur){
 		fill(255, 60)
 		rect(0, 0, width, height);
 	}else{
-		background(255);
+		background(0);
 	}
 
-
-
-	// camera(0, 0, 0, 0, 0, 0, 0, 1, 0);
-	// plane(10, 10);
-	checkCollisions();
+	// checkCollisions();
 	player.update()
 	camera.update(delta, player.position, player.velocity, 1.2);
 
-	// console.log(playerLocation, camera.location)
-	// push();
-	// 		ellipse(playerLocation.x, playerLocation.y, 10, 10)
-			//scale(1.5)
-			 map.render();
-			player.draw()
+	translate(-width/2,-height/2,0);
+	player.draw()
+	map2.display();
+
 			// fill(255)
 			// ellipseMode(CENTER)
 	// pop();
 	// noFill();
 	// stroke(0)
-	// // rect(0, 0, camera.width, camera.height);
+	// rect(0, 0, camera.width, camera.height);
 	// line(width/2, 0, width/2, height)
 	// line(0, height/2, width, height/2)
+
 	if(frameCount % 5 === 0){
-		fill(255, 255, 0)
-		noStroke();
-		text(Math.floor(frameRate()), 10, 10)
-		stroke(0)
+		// fill(255, 255, 0)
+		// noStroke();
+		// textSize(36);
+		// textFont("Georgia");
+		// text(Math.floor(frameRate()), 10, 10)
+		// stroke(0)
 	}
 
 
