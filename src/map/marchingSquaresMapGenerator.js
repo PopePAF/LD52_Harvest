@@ -12,11 +12,14 @@ class MarchingSquaresMapGenerator{
 
 	lerp = true;
 
+	bubbleCount;
+
 
 	bubbles = [];
 
 
-	constructor(_width, _height, _rez, _lerp) {
+	constructor(_width, _height, _rez, _lerp, _bubbleCount) {
+		this.bubbleCount = _bubbleCount;
 		this.width = _width;
 		this.height = _height;
 		this.rez = _rez;
@@ -33,7 +36,7 @@ class MarchingSquaresMapGenerator{
 			this.field.push(k);
 		}
 
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < this.bubbleCount; i++) {
 			this.bubbles.push(new Bubble());
 		}
 
