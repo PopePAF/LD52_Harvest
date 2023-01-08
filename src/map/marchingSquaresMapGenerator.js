@@ -1,5 +1,7 @@
 
 class MarchingSquaresMapGenerator{
+	width;
+	height;
 	 field = [];
 	 rez = 5;
 	cols;
@@ -11,19 +13,28 @@ class MarchingSquaresMapGenerator{
 	lerp = true;
 
 
+	bubbles = [];
+
+
 	constructor(_width, _height, _rez, _lerp) {
+		this.width = _width;
+		this.height = _height;
 		this.rez = _rez;
 		this.lerp = _lerp;
 
 		this.noise = new OpenSimplexNoise(Date.now());
-		this.cols = 1 + _width / this.rez;
-		this.rows = 1 + _height / this.rez;
+		this.cols = 1 + this.width / this.rez;
+		this.rows = 1 + this.height / this.rez;
 		for (let i = 0; i < this.cols; i++) {
 			let k = [];
 			for (let j = 0; j < this.rows; j++) {
 				k.push(0);
 			}
 			this.field.push(k);
+		}
+
+		for (let i = 0; i < 3; i++) {
+			this.bubbles.push(new Bubble());
 		}
 
 
@@ -50,11 +61,22 @@ class MarchingSquaresMapGenerator{
 			xoff += this.increment;
 			let yoff = 0;
 			for (let j = 0; j < this.rows; j++) {
-				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff));
+				let sum = 0;
+				let x = i * this.rez;
+				let y = j * this.rez;
+				for (let b of this.bubbles) {
+					sum += (b.r * b.r) / ((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y));
+				}
+				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) - sum;
 				yoff += this.increment;
 			}
 		}
-		this.zoff += 0.002;
+		this.zoff += 0.001;
+
+		for (let b of this.bubbles) {
+			b.update();
+			b.show();
+		}
 
 		for (let i = 0; i < this.cols - 1; i++) {
 			for (let j = 0; j < this.rows - 1; j++) {
