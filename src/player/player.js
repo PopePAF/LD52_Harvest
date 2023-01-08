@@ -90,10 +90,10 @@ class Player{
 
     checkForBubbleCollision(){
         for (let bubble of map2.bubbles){
-            let bubblePos = createVector(bubble.x, bubble.y)
-            let distance = p5.Vector.sub(this.position, bubblePos).mag()
+            let distance = p5.Vector.sub(this.position, bubble.position).mag()
             if (distance <= bubble.r){
-                console.log('collision')
+                bubble.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
+                bubble.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
             }
         }
     }
