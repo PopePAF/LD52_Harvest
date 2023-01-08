@@ -5,11 +5,11 @@
 // https://youtu.be/0ZONMNUKTfU
 // p5 port: https://editor.p5js.org/codingtrain/sketches/hEB4588QC
 class Bubble {
-	constructor() {
-		this.r = random(25, 40);
+	constructor(position , r) {
+		this.r = r;
 		this.direction = createVector(random([-1, 1]), random([-1, 1]))
 		this.velocity = createVector(1, 1)
-		this.position = createVector(random(this.r, width - this.r), random(this.r, height - this.r))
+		this.position = position;
 		this.friction = 0.02
 	}
 

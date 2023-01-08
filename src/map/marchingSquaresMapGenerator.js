@@ -37,9 +37,31 @@ class MarchingSquaresMapGenerator{
 		}
 
 		for (let i = 0; i < this.bubbleCount; i++) {
-			this.bubbles.push(new Bubble());
+			let spaceOccupied = false;
+			let r;
+			let position;
+
+			do{
+				spaceOccupied = false;
+				r = random(25, 40);
+				position = createVector(random(r, width - r), random(r, height - r));
+				for(let bubble of this.bubbles){
+					if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
+						spaceOccupied = true;
+					}
+				}
+			}while(spaceOccupied);
+
+
+			this.bubbles.push(new Bubble(position, r));
 		}
 
+
+	}
+
+	checkCircleColission(position1, r1, position2, r2){
+			let distance = p5.Vector.sub(position1, position2).mag()
+			return distance <= r2 + r1;
 
 	}
 
