@@ -179,8 +179,8 @@ class MarchingSquaresMapGenerator{
 
 		for (let i = 0; i < this.cols - 1; i++) {
 			for (let j = 0; j < this.rows - 1; j++) {
-				let x = i * this.rez;
-				let y = j * this.rez;
+				let x = i * this.rez + Math.floor(this.rez/2);
+				let y = j * this.rez + Math.floor(this.rez/2);
 
 				let noiseVal = this.field[i][j].noiseVal;
 				// if(noiseVal<0){

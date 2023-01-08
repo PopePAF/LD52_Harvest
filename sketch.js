@@ -44,7 +44,7 @@ function setup() {
 	restartBtn = createButton('Restart')
 	restartBtn.position(windowWidth/2, 500)
 	restartBtn.mousePressed(restartGame)
-	//restartBtn.hide()
+	restartBtn.hide()
 
 	frameRate(60)
 }
