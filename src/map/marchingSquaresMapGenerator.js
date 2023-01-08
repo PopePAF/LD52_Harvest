@@ -26,15 +26,7 @@ class MarchingSquaresMapGenerator{
 			this.field.push(k);
 		}
 
-		let xoff = 0;
-		for (let i = 0; i < this.cols; i++) {
-			xoff += this.increment;
-			let yoff = 0;
-			for (let j = 0; j < this.rows; j++) {
-				this.field[i][j] = float(this.noise.noise2D(xoff, yoff));
-				yoff += this.increment;
-			}
-		}
+
 	}
 
 	drawLine(v1, v2) {
@@ -52,6 +44,18 @@ class MarchingSquaresMapGenerator{
 	}
 
 	display(){
+
+		let xoff = 0;
+		for (let i = 0; i < this.cols; i++) {
+			xoff += this.increment;
+			let yoff = 0;
+			for (let j = 0; j < this.rows; j++) {
+				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff));
+				yoff += this.increment;
+			}
+		}
+		this.zoff += 0.002;
+
 		for (let i = 0; i < this.cols - 1; i++) {
 			for (let j = 0; j < this.rows - 1; j++) {
 				let x = i * this.rez;
@@ -165,5 +169,38 @@ class MarchingSquaresMapGenerator{
 
 	getState(a, b, c, d) {
 		return a * 8 + b * 4 + c * 2 + d * 1;
+	}
+
+	getLineCircleIntersections(p1, p2, cpt, r) {
+		let x1 = p1.copy().sub(cpt);
+		let x2 = p2.copy().sub(cpt);
+
+		let dv = x2.copy().sub(x1)
+		let dr = dv.mag();
+		let D = x1.x * x2.y - x2.x * x1.y;
+
+		// evaluate if there is an intersection
+		let di = r * r * dr * dr - D * D;
+		if (di < 0.0) {
+			return [];
+		}
+
+		let t = sqrt(di);
+
+		let ip = [];
+		ip.push(new p5.Vector(D * dv.y + Math.sign(dv.y) * dv.x * t, -D * dv.x + abs(dv.y) * t).div(dr * dr).add(cpt));
+		if (di > 0.0) {
+			ip.push(new p5.Vector(D * dv.y - Math.sign(dv.y) * dv.x * t, -D * dv.x - abs(dv.y) * t).div(dr * dr).add(cpt));
+		}
+
+		push();
+		for (let p of ip) {
+			stroke('lime');
+			strokeWeight(8);
+			point(p.x, p.y);
+		}
+		pop();
+
+		return ip.filter(p => p.x >= p1.x && p.x <= p2.x);
 	}
 }

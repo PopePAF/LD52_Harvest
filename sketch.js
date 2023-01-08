@@ -17,7 +17,7 @@ function setup() {
 	camera = new View(0, 0, width, height)
 
 	// map = new Map(300, 300, 16, 20)
-	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, false);
+	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true);
 	// player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
 	player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
