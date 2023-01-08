@@ -44,6 +44,9 @@ class Bubble {
 			if (bubble !== this){
 				let distance = p5.Vector.sub(bubble.position, this.position)
 				if (distance.mag() <= this.r + bubble.r){
+					if (bubble.charge < 0.5 && this.charge > 0){
+						bubble.charge = 0.5
+					}
 					this.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 					bubble.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 
