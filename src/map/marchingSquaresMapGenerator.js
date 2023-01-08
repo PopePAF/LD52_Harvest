@@ -12,11 +12,14 @@ class MarchingSquaresMapGenerator{
 
 	lerp = true;
 
+	bubbleCount;
+
 
 	bubbles = [];
 
 
-	constructor(_width, _height, _rez, _lerp) {
+	constructor(_width, _height, _rez, _lerp, _bubbleCount) {
+		this.bubbleCount = _bubbleCount;
 		this.width = _width;
 		this.height = _height;
 		this.rez = _rez;
@@ -33,7 +36,7 @@ class MarchingSquaresMapGenerator{
 			this.field.push(k);
 		}
 
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < this.bubbleCount; i++) {
 			this.bubbles.push(new Bubble());
 		}
 
@@ -54,8 +57,15 @@ class MarchingSquaresMapGenerator{
 
 	}
 
+	displayBorders(){
+		push();
+			camera.translateToView();
+			noFill();
+			rect(0, 0, this.width, this.height);
+		pop();
+	}
 	display(){
-
+		this.displayBorders();
 		let xoff = 0;
 		for (let i = 0; i < this.cols; i++) {
 			xoff += this.increment;
