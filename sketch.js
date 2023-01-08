@@ -19,6 +19,8 @@ let score = 0
 
 let game = true
 
+let restartBtn
+
 function setup() {
 	if(webglOn){
 		createCanvas(600, 600, WEBGL);
@@ -38,6 +40,12 @@ function setup() {
 	score = 1;
 	lastMillis = 0
 	game = true
+
+	restartBtn = createButton('Restart')
+	restartBtn.position(windowWidth/2, 500)
+	restartBtn.mousePressed(restartGame)
+	//restartBtn.hide()
+
 	frameRate(60)
 }
 
@@ -46,6 +54,7 @@ function draw() {
 	background(0)
 
 	if (!game){
+		restartBtn.show()
 		textSize(40)
 		fill(200, 0, 0)
 		textAlign(CENTER)
@@ -146,7 +155,19 @@ function checkCollisions(){
 	}
 }
 
+function restartGame(){
 
+	score = 0
+	player.healthPerc = 1
+	player.velocity.mult(0)
+	player.position = createVector(map2.rows/2 * map2.rez, map2.cols/2 * map2.rez)
+	restartBtn.hide()
+	game = true
+}
+
+function windowResized(){
+	restartBtn.position(windowWidth/2, 500)
+}
 
 function keyPressed(){
 	if (keyCode === 82) { // 82 is the key code for "r"
