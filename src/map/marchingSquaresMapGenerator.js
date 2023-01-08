@@ -69,9 +69,10 @@ class MarchingSquaresMapGenerator{
 		// console.log("drowing line?")
 		if(camera.lineInView(v1.x, v1.y, v2.x, v2.y)){
 			// console.log("line in view")
+			let length = dist(v1.x,v1.y,v2.x,v2.y);
 			push();
 				camera.translateToView();
-				strokeWeight(2)
+				if(length<20)
 				line(v1.x, v1.y, v2.x, v2.y);
 			pop();
 		}
