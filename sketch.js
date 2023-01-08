@@ -13,12 +13,20 @@ let noise;
 
 let imgs = [];
 
+let webglOn = false;
+
 function preload(){
 
 }
 
 function setup() {
-	createCanvas(600, 600, WEBGL);
+	if(webglOn){
+		createCanvas(600, 600, WEBGL);
+	}else{
+		createCanvas(600, 600);
+
+	}
+
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
@@ -47,7 +55,9 @@ function draw() {
 	player.update()
 	camera.update(delta, player.position, player.velocity, 1.2);
 
-	translate(-width/2,-height/2,0);
+	if(webglOn) {
+		translate(-width / 2, -height / 2, 0);
+	}
 
 
 
