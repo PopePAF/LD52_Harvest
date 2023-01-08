@@ -15,9 +15,7 @@ let imgs = [];
 
 let webglOn = false;
 
-function preload(){
 
-}
 
 function setup() {
 	if(webglOn){
@@ -73,10 +71,18 @@ function draw() {
 		// stroke(0)
 	}
 
-	stroke(255)
+	fill(0,255,0)
+	noStroke()
+	rect(15, 565, player.healthPerc * 200, 20, 40)
+
 	noFill()
+	stroke(255)
+	rect(15, 565, 200, 20, 40)
+
 	rect(0, 0, width, height, 10)
 	stroke(255,0,0)
+
+
 }
 
 function checkCollisions(){

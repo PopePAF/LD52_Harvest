@@ -12,7 +12,8 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
-        this.health = 3
+        this.healthPerc = 1
+        this.lastSecond = 0
     }
 
     draw(){
@@ -62,6 +63,13 @@ class Player{
         }
 
         this.checkForBubbleCollision()
+
+        if (this.lastSecond !== second() && this.healthPerc > 0){
+            this.healthPerc -= 0.05
+            this.lastSecond = second()
+        }
+
+
 
     }
 
