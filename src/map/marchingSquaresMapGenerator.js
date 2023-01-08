@@ -86,7 +86,7 @@ class MarchingSquaresMapGenerator{
 				let x = i * this.rez;
 				let y = j * this.rez;
 				for (let b of this.bubbles) {
-					sum += (b.r * b.r) / ((x - b.x) * (x - b.x) + (y - b.y) * (y - b.y));
+					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
 				}
 				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) - sum;
 				yoff += this.increment;
