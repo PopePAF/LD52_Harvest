@@ -23,7 +23,7 @@ class Bubble {
 			noFill();
 			stroke(255);
 			// fill(255, 50);
-			strokeWeight(1);
+			strokeWeight(2);
 			circle(this.x, this.y, this.r * 2);
 		pop();
 

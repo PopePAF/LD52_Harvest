@@ -2,7 +2,7 @@ class Player{
 
     constructor(initPos) {
         this.position = createVector(initPos.x, initPos.y);
-        this.size = 10
+        this.size = 15
         this.color = color(255, 0, 0)
         this.velocity = createVector()
         this.acc = createVector()
@@ -62,10 +62,6 @@ class Player{
 
     applyForce(force, multiplier){
         this.acc.add(force.copy().normalize().mult(multiplier))
-    }
-
-    checkColission(){
-        map.get
     }
 
     shootTentacle(){
