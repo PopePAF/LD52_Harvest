@@ -106,7 +106,7 @@ class Wall extends Tile {
 				camera.translateToView();
 				translate(this.location.x, this.location.y);
 				noStroke();
-				fill(0, 0, 0)
+				fill(0,0,0)
 				rect(0, 0, this.scale, this.scale);
 			pop();
 		}

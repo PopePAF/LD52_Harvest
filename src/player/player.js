@@ -12,12 +12,15 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
+        this.particleRenderer = new FleshParticles(10, 5000, 1, 500, this.position, this.size/2, this.size/2)
     }
 
     draw(){
+
         push()
             camera.translateToView()
             //translate(this.position.x, this.position.y);
+            this.particleRenderer.drawParticles()
             fill(this.color)
             rectMode(CENTER)
             square(this.position.x, this.position.y, this.size)
