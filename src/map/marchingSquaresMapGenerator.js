@@ -72,7 +72,7 @@ class MarchingSquaresMapGenerator{
 			let length = dist(v1.x,v1.y,v2.x,v2.y);
 			push();
 				camera.translateToView();
-				if(length<20)
+				if(length<50)
 				line(v1.x, v1.y, v2.x, v2.y);
 			pop();
 		}
