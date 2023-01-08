@@ -60,8 +60,10 @@ class Bubble {
 				if (this.charge > 0){
 					map2.bubbleCollectibles.splice(map2.bubbleCollectibles.indexOf(bubbleC), 1)
 					map2.placeBubbleCollectible()
-					if(player.healthPerc < 1){
+					if(player.healthPerc <= 0.8){
 						player.healthPerc += 0.2
+					}else if (player.healthPerc < 1){
+						player.healthPerc += (1 - player.healthPerc)
 					}
 					score += 200
 				}else {
