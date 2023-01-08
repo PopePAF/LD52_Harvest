@@ -11,8 +11,9 @@ class MarchingSquaresMapGenerator{
 	lerp = true;
 
 
-	constructor(_width, _height, _rez) {
+	constructor(_width, _height, _rez, _lerp) {
 		this.rez = _rez;
+		this.lerp = _lerp;
 
 		this.noise = new OpenSimplexNoise(Date.now());
 		this.cols = 1 + _width / this.rez;
