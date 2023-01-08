@@ -50,12 +50,10 @@ function draw() {
 	translate(-width/2,-height/2,0);
 
 
-	player.draw()
+
 	map2.display();
 
-
-
-
+	player.draw()
 	if(frameCount % 5 === 0){
 		// fill(255, 255, 0)
 		// noStroke();

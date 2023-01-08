@@ -49,15 +49,26 @@ class MarchingSquaresMapGenerator{
 			// console.log("line in view")
 			push();
 				camera.translateToView();
-				stroke(255)
-				strokeWeight(1)
+				strokeWeight(2)
 				line(v1.x, v1.y, v2.x, v2.y);
 			pop();
 		}
 
 	}
 
-	displayBorders(){
+	drawEllipse(x, y, r, color){
+		if(camera.pointInView(x, y)){
+			// console.log("line in view")
+			push();
+			camera.translateToView();
+			noStroke();
+			fill(color);
+			ellipse(x, y, r, r);
+			pop();
+		}
+	}
+
+	displayBorders(color){
 		push();
 			camera.translateToView();
 			noFill();
@@ -92,6 +103,18 @@ class MarchingSquaresMapGenerator{
 			for (let j = 0; j < this.rows - 1; j++) {
 				let x = i * this.rez;
 				let y = j * this.rez;
+
+				let noiseVal = this.field[i][j];
+				// if(noiseVal<0){
+				// 	let currentColor = color(0, this.field[i][j] * -255, 0);
+				// 	this.drawEllipse(x, y, this.rez,currentColor);
+				// }
+
+				if(noiseVal>0){
+					let currentColor = color(this.field[i][j] * 255, 0, 0);
+					this.drawEllipse(x, y, this.rez,currentColor);
+				}
+
 
 				if(!camera.pointInView(x, y)){
 					continue;
@@ -147,7 +170,7 @@ class MarchingSquaresMapGenerator{
 				}
 				d.x = x;
 
-				stroke(255);
+				stroke(255, 0, 0);
 				strokeWeight(2);
 				switch (state) {
 					case 1:
