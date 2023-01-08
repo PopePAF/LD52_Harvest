@@ -6,7 +6,7 @@
 // p5 port: https://editor.p5js.org/codingtrain/sketches/hEB4588QC
 class Bubble {
 	constructor() {
-		this.r = random(40, 60);
+		this.r = random(25, 40);
 		this.direction = createVector(random([-1, 1]), random([-1, 1]))
 		this.velocity = createVector(1, 1)
 		this.position = createVector(random(this.r, width - this.r), random(this.r, height - this.r))
@@ -15,19 +15,16 @@ class Bubble {
 	}
 
 	show() {
-		if(camera.pointInView(this.position.x + this.r, this.position.y) || camera.pointInView(this.position.x - this.r, this.position.y) || camera.pointInView(this.position.x, this.position.y + this.r) || camera.pointInView(this.position.x, this.position.y - this.r)) {
-			push()
-			camera.translateToView();
-			noFill();
-			stroke(255);
-			// fill(255, 50);
-			strokeWeight(2);
-			circle(this.position.x, this.position.y, this.r * 2);
-			pop();
-		}
-
-
-
+		// if(camera.pointInView(this.position.x + this.r, this.position.y) || camera.pointInView(this.position.x - this.r, this.position.y) || camera.pointInView(this.position.x, this.position.y + this.r) || camera.pointInView(this.position.x, this.position.y - this.r)) {
+		// 	push()
+		// 	camera.translateToView();
+		// 	noFill();
+		// 	stroke(255);
+		// 	// fill(255, 50);
+		// 	strokeWeight(2);
+		// 	circle(this.position.x, this.position.y, this.r * 2);
+		// 	pop();
+		// }
 	}
 
 	update() {

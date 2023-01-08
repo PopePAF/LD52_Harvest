@@ -20,14 +20,17 @@ class Player{
         push()
             camera.translateToView()
             //translate(this.position.x, this.position.y);
-            fill(this.color)
-            circle(this.position.x, this.position.y, this.size)
             if (this.tentacles.main){
                 this.tentacles.main.draw()
             }
             if (this.tentacles.smallOne){
                 this.tentacles.smallOne.draw()
             }
+            //translate(this.position.x, this.position.y);
+            // this.particleRenderer.drawParticles()
+            fill(this.color)
+            noStroke()
+            circle(this.position.x, this.position.y, this.size)
         pop()
     }
 
@@ -112,7 +115,7 @@ class Tentacle{
         this.ready = false
         this.startPos = startPos
         this.endPos = this.startPos.copy().add(target.copy().sub(this.startPos).limit(range))
-        this.color = color(255, 100, 100)
+        this.color = color(255, 0, 0)
     }
 
     draw(){
@@ -123,7 +126,7 @@ class Tentacle{
             this.ready = true
         }
         stroke(this.color)
-        strokeWeight(4)
+        strokeWeight(12-this.lengthMultiplier*10)
         line(this.startPos.x, this.startPos.y, this.startPos.x + ((this.endPos.x - this.startPos.x) * this.lengthMultiplier), this.startPos.y + ((this.endPos.y - this.startPos.y) * this.lengthMultiplier))
     }
 

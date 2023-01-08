@@ -88,7 +88,7 @@ class MarchingSquaresMapGenerator{
 				for (let b of this.bubbles) {
 					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
 				}
-				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) - sum;
+				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum;
 				yoff += this.increment;
 			}
 		}
@@ -110,7 +110,7 @@ class MarchingSquaresMapGenerator{
 				// 	this.drawEllipse(x, y, this.rez,currentColor);
 				// }
 
-				if(noiseVal>0){
+				if(noiseVal > 0.4){
 					let currentColor = color(this.field[i][j] * 255, 0, 0);
 					this.drawEllipse(x, y, this.rez,currentColor);
 				}
@@ -172,6 +172,7 @@ class MarchingSquaresMapGenerator{
 
 				stroke(255, 0, 0);
 				strokeWeight(2);
+				// state = 0;
 				switch (state) {
 					case 1:
 						this.drawLine(c, d);
