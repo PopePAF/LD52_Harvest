@@ -12,12 +12,15 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
+        this.particleRenderer = new FleshParticles(10, 5000, 1, 500, this.position, this.size/2, this.size/2)
     }
 
     draw(){
+
         push()
             camera.translateToView()
             //translate(this.position.x, this.position.y);
+            this.particleRenderer.drawParticles()
             fill(this.color)
             rectMode(CENTER)
             square(this.position.x, this.position.y, this.size)
@@ -40,10 +43,7 @@ class Player{
             this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05)
         }
 
-
         this.velocity.mult(1 - this.friction * frictionMultiplier)
-
-
 
         this.velocity.add(this.acc).limit(this.speedLimit)
         this.position.add(this.velocity)
@@ -52,9 +52,10 @@ class Player{
         if (p5.Vector.sub(this.targetVectorSmallOne , this.position).mag() > 60){
             this.releaseSmallTentacle()
         }
+    }
 
-
-
+    applyForce(force, multiplier){
+        this.acc.add(force.copy().normalize().mult(multiplier))
     }
 
     checkColission(){
@@ -81,12 +82,9 @@ class Player{
     releaseSmallTentacle(){
         this.tentacles.smallOne = null
         this.targetVectorSmallOne = this.position
-
     }
 
-    applyForce(force, multiplier){
-        this.acc.add(force.copy().normalize().mult(multiplier))
-    }
+
 
 
 }
@@ -95,6 +93,8 @@ class Tentacle{
 
     constructor(startPos, target, range) {
         this.lengthMultiplier = 0
+        this.range = range
+        this.target = target
         this.ready = false
         this.startPos = startPos
         this.endPos = this.startPos.copy().add(target.copy().sub(this.startPos).limit(range))
@@ -103,7 +103,7 @@ class Tentacle{
 
     draw(){
         if (this.lengthMultiplier < 1){
-            this.lengthMultiplier += 0.15
+            this.lengthMultiplier += 0.15 + ((1 / this.target.copy().sub(this.startPos).limit(this.range).mag()) * 3)
         }
         else{
             this.ready = true

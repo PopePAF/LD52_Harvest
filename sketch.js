@@ -37,6 +37,8 @@ function draw() {
 		player.shootSmallTentacle()
 	}
 
+	background(255);
+
 	if(blur){
 		fill(255, 60)
 		rect(0, 0, width, height);
