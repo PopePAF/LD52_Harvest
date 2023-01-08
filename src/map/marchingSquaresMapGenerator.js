@@ -138,8 +138,8 @@ class MarchingSquaresMapGenerator{
 				// 	this.drawEllipse(x, y, this.rez,currentColor);
 				// }
 
-				if(noiseVal > 0.4){
-					let currentColor = color(this.field[i][j] * 255, 0, 0);
+				if(noiseVal > 0.3){
+					let currentColor = color(this.field[i][j] * 255, 0, 0, this.field[i][j] * 255);
 					ellipseMode(CORNER)
 					this.drawEllipse(x, y, this.rez,currentColor);
 				}
