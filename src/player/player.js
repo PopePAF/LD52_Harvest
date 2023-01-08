@@ -94,6 +94,7 @@ class Player{
             if (distance <= bubble.r){
                 bubble.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
                 bubble.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
+                bubble.velocity.limit(bubble.maxSpeed)
             }
         }
     }

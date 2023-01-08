@@ -11,6 +11,7 @@ class Bubble {
 		this.velocity = createVector(1, 1)
 		this.position = createVector(random(this.r, width - this.r), random(this.r, height - this.r))
 		this.friction = 0.02
+		this.maxSpeed = 40
 	}
 
 	show() {
@@ -42,22 +43,30 @@ class Bubble {
 
 		for (let bubble of map2.bubbles){
 			if (bubble !== this){
-				if (p5.Vector.sub(this.position, bubble.position).mag() <= this.r + bubble.r){
-					bubble.velocity.add(this.velocity)
-					bubble.direction.set(this.direction)
-					this.direction.mult(-1)
+				let distance = p5.Vector.sub(bubble.position, this.position)
+				if (distance.mag() <= this.r + bubble.r){
+					this.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
+					bubble.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
+
+					this.velocity.limit(this.maxSpeed)
+
+					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
 				}
-			} else{
-				console.log('dddd')
 			}
 		}
 
 
-		if (this.position.x > map2.width - this.r || this.position.x < this.r) {
-			this.direction.x *= -1
+		if (this.position.x > map2.width - this.r) {
+			this.direction.x = -1
 		}
-		if (this.position.y > map2.height - this.r || this.position.y < this.r) {
-			this.direction.y *= -1;
+		if (this.position.x < this.r){
+			this.direction.x = 1
+		}
+		if (this.position.y > map2.height - this.r) {
+			this.direction.y = -1;
+		}
+		if (this.position.y < this.r){
+			this.direction.y = 1
 		}
 	}
 }
