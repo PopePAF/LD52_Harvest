@@ -30,6 +30,7 @@ class Player{
             // this.particleRenderer.drawParticles()
             fill(this.color)
             noStroke()
+            ellipseMode(CENTER)
             circle(this.position.x, this.position.y, this.size)
         pop()
     }

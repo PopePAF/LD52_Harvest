@@ -112,7 +112,10 @@ class MarchingSquaresMapGenerator{
 				}
 				let shadowRadius = player.size * 3;
 				let playerShadow = (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
-				this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine;
+
+				let noiseValue = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine
+				noiseValue = constrain(noiseValue, -1, 1)
+				this.field[i][j] = noiseValue;
 				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
 				yoff += this.increment;
 			}
@@ -137,6 +140,7 @@ class MarchingSquaresMapGenerator{
 
 				if(noiseVal > 0.4){
 					let currentColor = color(this.field[i][j] * 255, 0, 0);
+					ellipseMode(CORNER)
 					this.drawEllipse(x, y, this.rez,currentColor);
 				}
 
