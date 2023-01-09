@@ -67,12 +67,19 @@ class Player{
         this.velocity.add(this.acc).limit(this.speedLimit)
 
         this.position.add(this.velocity)
-        if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2 || !this.checkInBounds()) {
-            this.velocity.x *= -1;
-        }
-        if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2 || !this.checkInBounds()) {
+
+        if(!this.checkInBounds()){
             this.velocity.y *= -1;
+            this.velocity.x *= -1;
+        }else{
+            if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
+                this.velocity.x *= -1;
+            }
+            if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2) {
+                this.velocity.y *= -1;
+            }
         }
+
         this.acc.mult(0)
 
         if (p5.Vector.sub(this.targetVectorSmallOne , this.position).mag() > 60){
@@ -93,7 +100,7 @@ class Player{
     }
 
     checkInBounds(){
-        return this.position.x < map2.width - this.size && this.position.x > this.size && this.position.y < map2.height - this.size && this.position.y > this.size;
+        return this.position.x < map2.width && this.position.x > 0 && this.position.y < map2.height && this.position.y > 0;
     }
 
     shootTentacle(){
