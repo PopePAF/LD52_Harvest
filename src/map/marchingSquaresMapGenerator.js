@@ -6,14 +6,16 @@ class MarchingSquaresMapGenerator{
 	 rez = 5;
 	cols;
 	rows;
-	 increment = 0.1;
+	 increment;
 	zoff = 0;
+	zspeed;
 	noise;
 
 	lerp = true;
 
 	bubbleCount;
 
+	backgroundNoiseThreshold = 0.3;
 
 	bubbles = [];
 
@@ -23,7 +25,10 @@ class MarchingSquaresMapGenerator{
 		this.width = _width;
 		this.height = _height;
 		this.rez = _rez;
-		this.lerp = _lerp;
+		this.lerp = Math.random() < 0.5;
+		this.increment = random(-1, 0.4)
+		this.zspeed = random(0.0001, 0.1);
+		this.backgroundNoiseThreshold = random(-1, 1);
 
 		this.noise = new OpenSimplexNoise(Date.now());
 		this.cols = 1 + this.width / this.rez;
@@ -147,7 +152,7 @@ class MarchingSquaresMapGenerator{
 				yoff += this.increment;
 			}
 		}
-		this.zoff += 0.001;
+		this.zoff += this.zspeed;
 
 		for (let b of this.bubbles) {
 			b.update();
@@ -165,7 +170,7 @@ class MarchingSquaresMapGenerator{
 				// 	this.drawEllipse(x, y, this.rez,currentColor);
 				// }
 
-				if(noiseVal > 0.3){
+				if(noiseVal > this.backgroundNoiseThreshold){
 					let currentColor = this.field[i][j].color
 					currentColor.alpha = noiseVal*255;
 					ellipseMode(CORNER)
@@ -294,6 +299,7 @@ class MarchingSquaresMapGenerator{
 
 				player.waypoint = createVector(map2.width/2, map2.height/2);
 				this.addBubbles(5)
+				this.increment = random(-1, 1);
 			}
 		}
 	}
