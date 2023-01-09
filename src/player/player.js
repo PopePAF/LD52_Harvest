@@ -1,5 +1,7 @@
 class Player{
 
+    waypoint;
+
     constructor(initPos) {
         this.position = createVector(initPos.x, initPos.y);
         this.size = 15
@@ -14,19 +16,23 @@ class Player{
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
         this.healthPerc = 1
         this.lastSecond = 0
+        this.waypoint = createVector(map2.width/2, map2.height/2);
+    }
+
+    drawWaypoint(){
+        if(!player.checkInBounds()){
+            if(frameCount % 45 === 0){
+                strokeWeight(2);
+                line(player.position.x, player.position.y, this.waypoint.x, this.waypoint.y)
+            }
+        }
     }
 
     draw(){
 
         push()
             camera.translateToView()
-            if(!this.checkInBounds()){
-                if(frameCount % 45 === 0){
-                    strokeWeight(2);
-                    line(player.position.x, player.position.y, map2.width/2, map2.height/2)
-                }
-            }
-
+            this.drawWaypoint();
             //translate(this.position.x, this.position.y);
             if (this.tentacles.main){
                 this.tentacles.main.draw()

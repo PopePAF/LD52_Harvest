@@ -7,6 +7,7 @@ class Menu{
 		if(!game){
 			return;
 		}
+
 		push()
 		camera.translateToView();
 		fill(255, 0, 0)
