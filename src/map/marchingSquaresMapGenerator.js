@@ -16,7 +16,6 @@ class MarchingSquaresMapGenerator{
 
 
 	bubbles = [];
-	bubbleCollectibles = [];
 
 
 	constructor(_width, _height, _rez, _lerp, _bubbleCount) {
@@ -66,26 +65,6 @@ class MarchingSquaresMapGenerator{
 
 	}
 
-	placeBubbleCollectible(){
-		let spaceOccupied = false;
-		let r;
-		let position;
-
-		do{
-			spaceOccupied = false;
-			r = random(15, 20);
-			position = createVector(random(r, width - r), random(r, height - r));
-			for(let bubble of this.bubbles){
-				if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
-					spaceOccupied = true;
-				}
-			}
-
-		}while(spaceOccupied);
-
-
-
-	}
 
 	drawLine(v1, v2) {
 		// console.log("drowing line?")
@@ -131,7 +110,6 @@ class MarchingSquaresMapGenerator{
 			for (let j = 0; j < this.rows; j++) {
 				let sum = 0;
 				let charge = 0;
-				let greenSum = 0;
 				let x = i * this.rez;
 				let y = j * this.rez;
 				let bubbleShine = 0;
@@ -154,7 +132,7 @@ class MarchingSquaresMapGenerator{
 
 
 				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
-				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum + greenSum - playerShadow;
+				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum - playerShadow;
 				noiseVal = constrain(noiseVal, -1, 1)
 				this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150), 255*noiseVal), noiseVal: noiseVal}
 

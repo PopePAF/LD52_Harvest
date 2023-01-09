@@ -53,7 +53,7 @@ function setup() {
 		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez})
 	}
 
-	score = 1;
+	score = 0;
 	lastMillis = 0
 	game = true
 
@@ -77,7 +77,6 @@ function draw() {
 
 	let delta = millis() - lastMillis;
 	lastMillis = millis();
-	score += Math.floor(delta / 10)
 
 	if (player.tentacles.smallOne && millis() % 1000 <= 50 && !(millis() % 3000 <= 50)){
 		player.releaseSmallTentacle()

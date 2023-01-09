@@ -19,7 +19,7 @@ class Menu{
 		pop();
 	}
 	displayInGameUI(){
-		fill((1 - player.healthPerc) * 255, player.healthPerc * 255, 0)
+		fill(255, 255, 20)
 		noStroke()
 		rect(15, 565, player.healthPerc * 200, 20, 40)
 
