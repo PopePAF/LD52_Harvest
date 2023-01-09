@@ -22,7 +22,7 @@ class Player{
     }
 
     drawWaypoint(){
-        if(!player.checkInBounds()){
+        if(!player.checkInBounds() || map2.bubbles.length === 0){
             if(frameCount % 45 === 0){
                 strokeWeight(2);
                 line(player.position.x, player.position.y, this.waypoint.x, this.waypoint.y)
