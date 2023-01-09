@@ -17,16 +17,16 @@ class Bubble {
 	}
 
 	show() {
-		// if(camera.pointInView(this.position.x + this.r, this.position.y) || camera.pointInView(this.position.x - this.r, this.position.y) || camera.pointInView(this.position.x, this.position.y + this.r) || camera.pointInView(this.position.x, this.position.y - this.r)) {
-		// 	push()
-		// 	camera.translateToView();
-		// 	noFill();
-		// 	stroke(255);
-		// 	// fill(255, 50);
-		// 	strokeWeight(2);
-		// 	circle(this.position.x, this.position.y, this.r * 2);
-		// 	pop();
-		// }
+		if(camera.pointInView(this.position.x + this.r, this.position.y) || camera.pointInView(this.position.x - this.r, this.position.y) || camera.pointInView(this.position.x, this.position.y + this.r) || camera.pointInView(this.position.x, this.position.y - this.r)) {
+			push()
+			camera.translateToView();
+			noFill();
+			stroke(255);
+			// fill(255, 50);
+			strokeWeight(2);
+			circle(this.position.x, this.position.y, this.r * 2);
+			pop();
+		}
 	}
 
 	update() {

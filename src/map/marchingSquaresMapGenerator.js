@@ -188,10 +188,11 @@ class MarchingSquaresMapGenerator{
 
 		for (let b of this.bubbles) {
 			b.update();
-			b.show();
+			// b.show();
 		}
 		for (let bC of this.bubbleCollectibles){
 			bC.update()
+			// b.show();
 		}
 
 		for (let i = 0; i < this.cols-1 ; i++) {

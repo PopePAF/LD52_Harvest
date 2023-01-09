@@ -1,5 +1,6 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
+let godMode = false;
 let map;
 let map2;
 
@@ -19,10 +20,10 @@ let score = 0
 
 let game = true
 
-let restartBtn
-
 let gameSong;
 let menuSong;
+
+let menu;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
@@ -31,13 +32,13 @@ function preload(){
 
 function setup() {
 	if(webglOn){
-		createCanvas(600, 600, WEBGL);
+		createCanvas(600, 600, P2D);
 	}else{
 		createCanvas(600, 600);
 
 	}
-	getAudioContext().suspend();
 
+	menu = new Menu();
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
@@ -50,11 +51,6 @@ function setup() {
 	lastMillis = 0
 	game = true
 
-	restartBtn = createButton('Restart')
-	restartBtn.position(windowWidth/2, 500)
-	restartBtn.mousePressed(restartGame)
-	restartBtn.hide()
-
 	frameRate(60)
 }
 
@@ -63,32 +59,10 @@ function draw() {
 	background(0)
 
 	if (!game){
-
-		if (!menuSong.isPlaying()) {
-			gameSong.stop();
-			// menuSong.setVolume(0, 5)
-			menuSong.play();
-		}
-
-		restartBtn.show()
-		textSize(40)
-		fill(200, 0, 0)
-		textAlign(CENTER)
-		text('GAME OVER', width/2, 200)
-
-		textSize(30)
-		textAlign(CENTER)
-		fill(255)
-		stroke(255,0,0)
-		text('Your final score is:', width/2, 350)
-		text(score, width/2, 400)
-
-		stroke(255)
-		noFill()
-		rect(0, 0, width, height, 10)
-		noStroke()
+		menu.displayGameOver();
 		return
 	}
+
 	if (!gameSong.isPlaying()) {
 		gameSong.play();
 		menuSong.stop();
@@ -112,44 +86,9 @@ function draw() {
 		translate(-width / 2, -height / 2, 0);
 	}
 
-
-
 	map2.display();
-
 	player.draw()
-	if(frameCount % 5 === 0){
-		// fill(255, 255, 0)
-		// noStroke();
-		// textSize(36);
-		// textFont("Georgia");
-		// text(Math.floor(frameRate()), 10, 10)
-		// stroke(0)
-	}
-
-	fill((1 - player.healthPerc) * 255, player.healthPerc * 255, 0)
-	noStroke()
-	rect(15, 565, player.healthPerc * 200, 20, 40)
-
-	noFill()
-	stroke(255)
-	rect(15, 565, 200, 20, 40)
-
-	fill(0)
-	rect(400, 550, 200, 50, 20, 0, 10, 0)
-
-	fill(255)
-	textSize(32)
-	textAlign(RIGHT)
-	text(score, 590, 587)
-
-	noFill()
-	rect(0, 0, width, height, 10)
-	stroke(255,0,0)
-
-	if (player.healthPerc <= 0){
-		game = false
-	}
-
+	menu.displayInGameUI();
 }
 
 function checkCollisions(){
@@ -176,22 +115,12 @@ function checkCollisions(){
 }
 
 function restartGame(){
-
-	score = 0
-	player.healthPerc = 1
-	player.velocity.mult(0)
-	player.position = createVector(map2.rows/2 * map2.rez, map2.cols/2 * map2.rez)
-	restartBtn.hide()
-	game = true
-}
-
-function windowResized(){
-	restartBtn.position(windowWidth/2, 500)
+	setup();
 }
 
 function keyPressed(){
 	if (keyCode === 82) { // 82 is the key code for "r"
-		map.refresh();
+		setup();
 	}
 }
 
