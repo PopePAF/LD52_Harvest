@@ -12,7 +12,8 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
-        this.health = 3
+        this.healthPerc = 1
+        this.lastSecond = 0
     }
 
     draw(){
@@ -64,6 +65,13 @@ class Player{
 
         this.checkForBubbleCollision()
 
+        if (this.lastSecond !== second() && this.healthPerc > 0){
+            this.healthPerc -= 0.05
+            this.lastSecond = second()
+        }
+
+
+
     }
 
     applyForce(force, multiplier){
@@ -99,6 +107,17 @@ class Player{
                 bubble.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
                 bubble.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
                 bubble.velocity.limit(bubble.maxSpeed)
+                if (bubble.velocity.mag() > 5){
+                    bubble.charge = 1
+                }
+            }
+        }
+        for (let bubbleC of map2.bubbleCollectibles){
+            let distance = p5.Vector.sub(this.position, bubbleC.position).mag()
+            if (distance <= bubbleC.r){
+                bubbleC.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
+                bubbleC.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
+                bubbleC.velocity.limit(bubbleC.maxSpeed)
             }
         }
     }

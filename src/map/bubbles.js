@@ -12,6 +12,8 @@ class Bubble {
 		this.position = position;
 		this.friction = 0.02
 		this.maxSpeed = 40
+		this.charge = 0
+		this.disChargeRate = 0.02
 	}
 
 	show() {
@@ -43,6 +45,9 @@ class Bubble {
 			if (bubble !== this){
 				let distance = p5.Vector.sub(bubble.position, this.position)
 				if (distance.mag() <= this.r + bubble.r){
+					if (bubble.charge < 0.5 && this.charge > 0){
+						bubble.charge = 0.5
+					}
 					this.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 					bubble.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 
@@ -51,6 +56,35 @@ class Bubble {
 					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
 				}
 			}
+		}
+
+		for (let bubbleC of map2.bubbleCollectibles){
+			let distance = p5.Vector.sub(bubbleC.position, this.position)
+			if (distance.mag() <= this.r + bubbleC.r){
+				if (this.charge > 0){
+					map2.bubbleCollectibles.splice(map2.bubbleCollectibles.indexOf(bubbleC), 1)
+					map2.placeBubbleCollectible()
+					if(player.healthPerc <= 0.8){
+						player.healthPerc += 0.2
+					}else if (player.healthPerc < 1){
+						player.healthPerc += (1 - player.healthPerc)
+					}
+					score += 200
+				}else {
+					this.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(2))
+					bubbleC.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(4).mult(3))
+
+					this.velocity.limit(this.maxSpeed)
+
+					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
+				}
+			}
+
+
+		}
+
+		if (this.charge > 0){
+			this.charge -= this.disChargeRate
 		}
 
 
