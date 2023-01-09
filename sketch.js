@@ -34,8 +34,10 @@ function setup() {
 	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 10);
 	// player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
-	player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
-	frameRate(60)
+	// player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
+	player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/8 * map2.rez})
+	frameRate(120)
+	// createLoop({duration:3, gif:true, download: true})
 }
 
 function draw() {
@@ -58,8 +60,6 @@ function draw() {
 	if(webglOn) {
 		translate(-width / 2, -height / 2, 0);
 	}
-
-
 
 	map2.display();
 
