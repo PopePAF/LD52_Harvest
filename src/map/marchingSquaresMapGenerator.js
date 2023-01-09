@@ -95,7 +95,43 @@ class MarchingSquaresMapGenerator{
 		push();
 			camera.translateToView();
 			noFill();
-			rect(0, 0, this.width, this.height);
+			let ip = this.intersectLineCircle(
+				createVector(0, 0),
+				createVector(this.width, 0),
+				player.position,
+				player.size*5
+			);
+			// line(0,0, this.width, 0);
+			if(ip.length > 0) {
+				// stroke(0);
+				strokeWeight(2);
+				line(ip[0].x, ip[0].y, this.width, 0)
+				if (ip.length < 2) {
+					line(0, 0, this.width, 0)
+				} else{
+					line(0, 0, ip[1].x, ip[1].y)
+				}
+
+				// line(ip[0].x, ip[0].y, ip[1].x, ip[1].y);
+			}
+
+			line(0,0, 0, this.height);
+
+			ip = this.intersectLineCircle(
+				createVector(this.width,this.height),
+				createVector(0, this.height),
+				player.position,
+				player.size*5
+			);
+			if(ip.length === 0){
+				line(this.width,this.height, 0, this.height);
+			}
+
+
+			line(this.width,this.height, this.width, 0);
+
+
+			// rect(0, 0, this.width, this.height);
 		pop();
 	}
 	display(){
@@ -296,7 +332,9 @@ class MarchingSquaresMapGenerator{
 			ip.push(new p5.Vector(D * dv.y - Math.sign(dv.y) * dv.x * t, -D * dv.x - abs(dv.y) * t).div(dr * dr).add(cpt));
 		}
 
+		console.log(ip)
 		push();
+		camera.translateToView();
 		for (let p of ip) {
 			stroke('lime');
 			strokeWeight(8);
@@ -305,5 +343,42 @@ class MarchingSquaresMapGenerator{
 		pop();
 
 		return ip.filter(p => p.x >= p1.x && p.x <= p2.x);
+	}
+
+	intersectLineCircle(p1, p2, cpt, r) {
+
+		let sign = function(x) { return x < 0.0 ? -1 : 1; };
+
+		let x1 = p1.copy().sub(cpt);
+		let x2 = p2.copy().sub(cpt);
+
+		let dv = x2.copy().sub(x1)
+		let dr = dv.mag();
+		let D = x1.x*x2.y - x2.x*x1.y;
+
+		// evaluate if there is an intersection
+		let di = r*r*dr*dr - D*D;
+		if (di < 0.0)
+			return [];
+
+		let t = sqrt(di);
+
+		let ip = [];
+		ip.push( createVector(D*dv.y + sign(dv.y)*dv.x * t, -D*dv.x + abs(dv.y) * t).div(dr*dr).add(cpt) );
+		if (di > 0.0) {
+			ip.push( createVector(D*dv.y - sign(dv.y)*dv.x * t, -D*dv.x - abs(dv.y) * t).div(dr*dr).add(cpt) );
+		}
+
+		ip = ip.filter((p) => p.x < this.width && p.x > 0);
+
+		// console.log(ip)
+		// push();
+		// for (let p of ip) {
+		// 	stroke('lime');
+		// 	strokeWeight(8);
+		// 	point(p.x, p.y);
+		// }
+		// pop();
+		return ip;
 	}
 }
