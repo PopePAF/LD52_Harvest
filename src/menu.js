@@ -13,6 +13,7 @@ class Menu{
 		fill(255, 0, 0)
 		textSize(20)
 		textAlign(CENTER)
+		strokeWeight(1)
 		text("Our dimension is running out of energy.", map2.width/2, -map2.height/4-200);
 		text("[ initiating void walkers program ]", map2.width/2, -map2.height/4-180);
 		text("May the harvest begin...", map2.width/2, -map2.height/4-160);
@@ -25,6 +26,7 @@ class Menu{
 
 		noFill()
 		stroke(255)
+		strokeWeight(2)
 		rect(15, 565, 200, 20, 40)
 
 		fill(0)
