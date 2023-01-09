@@ -106,8 +106,9 @@ class Player{
                 bubble.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
                 bubble.velocity.limit(bubble.maxSpeed)
                 bubble.direction.set(this.velocity.copy().normalize())
-                if (bubble.velocity.mag() > 5){
-                    bubble.charge = 1
+                if (bubble.velocity.mag() > 5 && bubble.disChargeReady){
+                    bubble.charge -= 0.5
+                    bubble.disChargeReady = false
                 }
             }
         }

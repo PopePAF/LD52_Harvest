@@ -12,8 +12,8 @@ class Bubble {
 		this.position = position;
 		this.friction = 0.02
 		this.maxSpeed = 40
-		this.charge = 0
-		this.disChargeRate = 0.02
+		this.charge = 1
+		this.disChargeReady = true
 	}
 
 	show() {
@@ -42,12 +42,14 @@ class Bubble {
 		}
 
 		for (let bubble of map2.bubbles){
+			let distanceToPlayer = p5.Vector.sub(player.position, this.position)
+			if (bubble === this && distanceToPlayer.mag() > this.r + 8){
+				this.disChargeReady = true
+			}
 			if (bubble !== this){
 				let distance = p5.Vector.sub(bubble.position, this.position)
 				if (distance.mag() <= this.r + bubble.r){
-					if (bubble.charge < 0.5 && this.charge > 0){
-						bubble.charge = 0.5
-					}
+
 					this.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 					bubble.velocity.set(p5.Vector.add(bubble.velocity, this.velocity).div(2))
 
@@ -83,9 +85,7 @@ class Bubble {
 
 		}
 
-		if (this.charge > 0){
-			this.charge -= this.disChargeRate
-		}
+
 
 
 		if (this.position.x > map2.width - this.r) {
