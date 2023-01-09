@@ -46,7 +46,7 @@ function setup() {
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
-	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 5);
+	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 0);
 	if(resetCount > 0){
 		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
 	}else{

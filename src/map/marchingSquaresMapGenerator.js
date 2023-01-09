@@ -280,9 +280,19 @@ class MarchingSquaresMapGenerator{
 		}
 
 		if(this.bubbles.length === 0){
-			player.waypoint = createVector(this.width*1.5+width*2, this.height/2)
-			if(player.position.x > this.width+width){
-				player.position.x = -width;
+			player.waypoint = createVector(this.width*1.5+width, this.height/2)
+			if(player.position.x > this.width+width/2){
+				let newX = -width/2;
+				player.position.x = newX;
+				if(player.tentacles.main){
+					player.tentacles.main.endPos.x -= (width+this.width);
+				}
+				if(player.tentacles.smallOne){
+					player.tentacles.smallOne.endPos.x = (width+this.width);
+				}
+
+
+				player.waypoint = createVector(map2.width/2, map2.height/2);
 				this.addBubbles(5)
 			}
 		}
