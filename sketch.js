@@ -37,9 +37,9 @@ function setup() {
 	gameStarted = false;
 	noCursor();
 	if(webglOn){
-		createCanvas(600, 600, P2D);
+		createCanvas(600, 533, WEBGL);
 	}else{
-		createCanvas(600, 600);
+		createCanvas(600, 533);
 
 	}
 
@@ -47,7 +47,7 @@ function setup() {
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
-	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 5);
+	map2 = new MarchingSquaresMapGenerator(600*2, 600*2, 15, true, 5);
 	if(resetCount > 0){
 		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
 	}else{
