@@ -47,16 +47,16 @@ class BubbleCollectible{
 
 
         if (this.position.x > map2.width - this.r) {
-            this.direction.x = -1
+            this.direction.x = -1 * Math.abs(this.direction)
         }
         if (this.position.x < this.r){
-            this.direction.x = 1
+            this.direction.x = Math.abs(this.direction)
         }
         if (this.position.y > map2.height - this.r) {
-            this.direction.y = -1;
+            this.direction.y = -1 * Math.abs(this.direction);
         }
         if (this.position.y < this.r){
-            this.direction.y = 1
+            this.direction.y = Math.abs(this.direction)
         }
     }
 }
