@@ -30,7 +30,6 @@ class Bubble {
 	}
 
 	update() {
-		// todo: fix this mult takes number "direction should really be just a starting direction the later direction will be the angle of velocity vector)
 		this.position.add(this.velocity.copy().mult(this.direction.copy()));
 
 		if(this.velocity.x > 1){
@@ -58,31 +57,6 @@ class Bubble {
 					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
 				}
 			}
-		}
-
-		for (let bubbleC of map2.bubbleCollectibles){
-			let distance = p5.Vector.sub(bubbleC.position, this.position)
-			if (distance.mag() <= this.r + bubbleC.r){
-				if (this.charge > 0){
-					map2.bubbleCollectibles.splice(map2.bubbleCollectibles.indexOf(bubbleC), 1)
-					map2.placeBubbleCollectible()
-					if(player.healthPerc <= 0.8){
-						player.healthPerc += 0.2
-					}else if (player.healthPerc < 1){
-						player.healthPerc += (1 - player.healthPerc)
-					}
-					score += 200
-				}else {
-					this.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(2))
-					bubbleC.velocity.set(p5.Vector.add(bubbleC.velocity, this.velocity).div(4).mult(3))
-
-					this.velocity.limit(this.maxSpeed)
-
-					this.direction.set(distance.x / ((Math.abs(distance.x)) * -1), distance.y / ((Math.abs(distance.y)) * -1))
-				}
-			}
-
-
 		}
 
 

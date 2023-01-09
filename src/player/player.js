@@ -51,10 +51,10 @@ class Player{
         this.velocity.add(this.acc).limit(this.speedLimit)
 
         this.position.add(this.velocity)
-        if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
+        if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2 || !this.checkInBounds()) {
             this.velocity.x *= -1;
         }
-        if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2) {
+        if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2 || !this.checkInBounds()) {
             this.velocity.y *= -1;
         }
         this.acc.mult(0)
@@ -65,8 +65,8 @@ class Player{
 
         this.checkForBubbleCollision()
 
-        if (this.lastSecond !== second() && this.healthPerc > 0){
-            this.healthPerc -= 0.05
+        if (this.lastSecond !== second() && this.healthPerc > 0 && this.checkInBounds()){
+            this.healthPerc -= 0.01
             this.lastSecond = second()
         }
 
@@ -74,6 +74,10 @@ class Player{
 
     applyForce(force, multiplier){
         this.acc.add(force.copy().normalize().mult(multiplier))
+    }
+
+    checkInBounds(){
+        return this.position.x < map2.width - this.size && this.position.x > this.size && this.position.y < map2.height - this.size && this.position.y > this.size;
     }
 
     shootTentacle(){
@@ -107,19 +111,16 @@ class Player{
                 bubble.velocity.limit(bubble.maxSpeed)
                 bubble.direction.set(this.velocity.copy().normalize())
                 if (bubble.velocity.mag() > 5 && bubble.disChargeReady){
+                    if (bubble.charge > 0){
+                        if(this.healthPerc <= 0.8){
+                            this.healthPerc += 0.2
+                        }else if (this.healthPerc < 1){
+                            this.healthPerc += (1 - this.healthPerc)
+                        }
+                    }
                     bubble.charge -= 0.5
                     bubble.disChargeReady = false
                 }
-            }
-        }
-        for (let bubbleC of map2.bubbleCollectibles){
-            let distance = p5.Vector.sub(this.position, bubbleC.position).mag()
-            if (distance <= bubbleC.r){
-                bubbleC.direction.set(this.velocity.x / Math.abs(this.velocity.x), this.velocity.y / Math.abs(this.velocity.y))
-                bubbleC.velocity.add(Math.abs(this.velocity.x), Math.abs(this.velocity.y))
-                bubbleC.velocity.limit(bubbleC.maxSpeed)
-                bubbleC.direction.set(this.velocity.copy().normalize())
-
             }
         }
     }

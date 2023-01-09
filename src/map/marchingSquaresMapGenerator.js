@@ -51,20 +51,11 @@ class MarchingSquaresMapGenerator{
 						spaceOccupied = true;
 					}
 				}
-				for(let bubbleC of this.bubbleCollectibles){
-					if(this.checkCircleColission(position, r, bubbleC.position, bubbleC.r)){
-						spaceOccupied = true;
-					}
-				}
 			}while(spaceOccupied);
 
 
 			this.bubbles.push(new Bubble(position, r));
 		}
-
-		//for (let i=0; i < 5; i++){
-			//this.placeBubbleCollectible()
-		//}
 
 
 	}
@@ -89,15 +80,10 @@ class MarchingSquaresMapGenerator{
 					spaceOccupied = true;
 				}
 			}
-			for(let bubbleC of this.bubbleCollectibles){
-				if(this.checkCircleColission(position, r, bubbleC.position, bubbleC.r)){
-					spaceOccupied = true;
-				}
-			}
+
 		}while(spaceOccupied);
 
 
-		this.bubbleCollectibles.push(new BubbleCollectible(position, r));
 
 	}
 
@@ -168,16 +154,11 @@ class MarchingSquaresMapGenerator{
 
 
 				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
-				for (let bC of this.bubbleCollectibles){
-					greenSum += (bC.r * bC.r) / ((x - bC.position.x) * (x - bC.position.x) + (y - bC.position.y) * (y - bC.position.y));
-				}
 				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum + greenSum - playerShadow;
 				noiseVal = constrain(noiseVal, -1, 1)
-				if (greenSum > 0.3){
-					this.field[i][j] = {color: color(0, noiseVal * 255, 0, 255*noiseVal), noiseVal: noiseVal}
-				}else{
-					this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150), 255*noiseVal), noiseVal: noiseVal}
-				}
+				this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150), 255*noiseVal), noiseVal: noiseVal}
+
+
 				//this.field[i][j] = {noiseVal: float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum, charge: charge}
 
 
@@ -188,10 +169,6 @@ class MarchingSquaresMapGenerator{
 
 		for (let b of this.bubbles) {
 			b.update();
-			// b.show();
-		}
-		for (let bC of this.bubbleCollectibles){
-			bC.update()
 			// b.show();
 		}
 
