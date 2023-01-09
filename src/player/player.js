@@ -3,7 +3,6 @@ class Player{
     constructor(initPos) {
         this.position = createVector(initPos.x, initPos.y);
         this.size = 15
-        this.color = color(255, 0, 0)
         this.velocity = createVector()
         this.acc = createVector()
         this.friction = 0.04
@@ -14,6 +13,7 @@ class Player{
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
         this.healthPerc = 1
         this.lastSecond = 0
+        this.hitBubbleColorMult = 0;
     }
 
     draw(){
@@ -36,7 +36,7 @@ class Player{
             }
             //translate(this.position.x, this.position.y);
             // this.particleRenderer.drawParticles()
-            fill(this.color)
+            fill(color(255, this.hitBubbleColorMult * 255, 0))
             noStroke()
             ellipseMode(CENTER)
             circle(this.position.x, this.position.y, this.size)
@@ -44,6 +44,9 @@ class Player{
     }
 
     update(){
+        if (this.hitBubbleColorMult > 0){
+            this.hitBubbleColorMult -= 0.1
+        }
         let frictionMultiplier = 1;
         if (this.tentacles.main && this.tentacles.main.ready){
             this.applyForce(p5.Vector.sub(this.targetVector , this.position), 1)
@@ -124,10 +127,12 @@ class Player{
                         }else if (this.healthPerc < 1){
                             this.healthPerc += (1 - this.healthPerc)
                         }
+                        this.hitBubbleColorMult = 1;
                     }
-                    bubble.charge -= 0.5
+                    bubble.charge -= 0.2
                     bubble.disChargeReady = false
                 }
+
             }
         }
     }
