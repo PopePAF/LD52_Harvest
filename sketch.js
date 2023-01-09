@@ -1,6 +1,9 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
 let godMode = true;
+
+let resetCount = 0;
+
 let map;
 let map2;
 
@@ -43,11 +46,13 @@ function setup() {
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
-	// map = new Map(300, 300, 16, 20)
 	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 5);
-	// player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
+	if(resetCount > 0){
+		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
+	}else{
+		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez})
+	}
 
-	player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez})
 	score = 1;
 	lastMillis = 0
 	game = true
@@ -126,6 +131,7 @@ function restartGame(){
 
 function keyPressed(){
 	if (keyCode === 82) { // 82 is the key code for "r"
+		resetCount += 1;
 		setup();
 	}
 }
