@@ -17,8 +17,8 @@ class Player{
         this.lastSecond = 0
         this.hitBubbleColorMult = 0;
         this.waypoint = createVector(map2.width/2, map2.height/2);
-        this.lostHealth = 0.04
-        this.gainedHealth = 0.1
+        this.lostHealth = 0.005;
+        this.gainedHealth = 0.05;
     }
 
     drawWaypoint(){
@@ -90,9 +90,12 @@ class Player{
 
         this.checkForBubbleCollision()
 
-        if (this.lastSecond !== second() && this.healthPerc > 0 && this.checkInBounds()){
-            this.healthPerc -= this.lostHealth
-            this.lastSecond = second()
+        if (frameCount % 10 === 0 && this.healthPerc > 0 && gameStarted){
+            let mult = 1;
+            if(!this.checkInBounds()){
+                mult = 0.2;
+            }
+            this.healthPerc -= this.lostHealth*mult
         }
 
     }
@@ -136,7 +139,7 @@ class Player{
                 bubble.velocity.limit(bubble.maxSpeed)
                 bubble.direction.set(this.velocity.copy().normalize())
                 if (bubble.velocity.mag() > 5 && bubble.disChargeReady){
-                    if (bubble.charge > 0){
+                    if (bubble.charge > 0 && gameStarted){
                         if(this.healthPerc <= 1 - this.gainedHealth){
                             this.healthPerc += this.gainedHealth
                         }else if (this.healthPerc < 1){

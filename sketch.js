@@ -1,6 +1,8 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
-let godMode = true;
+let godMode = false;
+
+let gameStarted = false;
 
 let resetCount = 0;
 
@@ -24,16 +26,15 @@ let score = 0
 let game = true
 
 let gameSong;
-let menuSong;
 
 let menu;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
-	menuSong = loadSound('assets/menu.mp3', null, null);
 }
 
 function setup() {
+	gameStarted = false;
 	noCursor();
 	if(webglOn){
 		createCanvas(600, 600, P2D);
@@ -46,7 +47,7 @@ function setup() {
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
-	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 0);
+	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 5);
 	if(resetCount > 0){
 		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
 	}else{
@@ -72,7 +73,6 @@ function draw() {
 
 	if (!gameSong.isPlaying()) {
 		gameSong.play();
-		menuSong.stop();
 	}
 
 	let delta = millis() - lastMillis;
@@ -136,6 +136,7 @@ function keyPressed(){
 }
 
 function mousePressed(e){
+	gameStarted = true;
 	if (e.button === 0){
 		player.shootTentacle()
 	}else if(e.button === 2){
