@@ -21,6 +21,12 @@ let game = true
 
 let restartBtn
 
+let gameSong;
+
+function preload(){
+	gameSong = loadSound('assets/ingame.mp3', null, null);
+}
+
 function setup() {
 	if(webglOn){
 		createCanvas(600, 600, WEBGL);
@@ -28,6 +34,7 @@ function setup() {
 		createCanvas(600, 600);
 
 	}
+	getAudioContext().suspend();
 
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
@@ -72,6 +79,9 @@ function draw() {
 		rect(0, 0, width, height, 10)
 		noStroke()
 		return
+	}
+	if (!gameSong.isPlaying()) {
+		gameSong.play();
 	}
 
 	let delta = millis() - lastMillis;
@@ -182,6 +192,7 @@ function mousePressed(e){
 		player.releaseTentacle()
 	}
 
+	userStartAudio();
 }
 
 function mouseReleased(e){
