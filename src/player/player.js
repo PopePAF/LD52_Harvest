@@ -76,7 +76,7 @@ class Player{
         this.checkForBubbleCollision()
 
         if (this.lastSecond !== second() && this.healthPerc > 0 && this.checkInBounds()){
-            this.healthPerc -= 0.01
+            this.healthPerc -= 0.04
             this.lastSecond = second()
         }
 
@@ -128,6 +128,7 @@ class Player{
                             this.healthPerc += (1 - this.healthPerc)
                         }
                         this.hitBubbleColorMult = 1;
+                        score += 200
                     }
                     bubble.charge -= 0.2
                     bubble.disChargeReady = false
