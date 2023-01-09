@@ -1,9 +1,22 @@
 class Menu{
 
-	display(){
+	displayTitle(){
 
 	}
-
+	displayIntro(){
+		if(!game){
+			return;
+		}
+		push()
+		camera.translateToView();
+		fill(255, 0, 0)
+		textSize(20)
+		textAlign(CENTER)
+		text("Our dimension is running out of energy.", map2.width/2, -map2.height/4-200);
+		text("Initiating void walkers program", map2.width/2, -map2.height/4-180);
+		text("Let the harvest begin...", map2.width/2, -map2.height/4-160);
+		pop();
+	}
 	displayInGameUI(){
 		fill((1 - player.healthPerc) * 255, player.healthPerc * 255, 0)
 		noStroke()
