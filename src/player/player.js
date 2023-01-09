@@ -20,6 +20,9 @@ class Player{
 
         push()
             camera.translateToView()
+            if(frameCount % 60 === 0)
+            line(player.position.x, player.position.y, map2.width/2, map2.height/2)
+
             //translate(this.position.x, this.position.y);
             if (this.tentacles.main){
                 this.tentacles.main.draw()

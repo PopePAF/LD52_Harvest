@@ -1,6 +1,6 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
-let godMode = false;
+let godMode = true;
 let map;
 let map2;
 
@@ -31,6 +31,7 @@ function preload(){
 }
 
 function setup() {
+	noCursor();
 	if(webglOn){
 		createCanvas(600, 600, P2D);
 	}else{
@@ -46,7 +47,7 @@ function setup() {
 	map2 = new MarchingSquaresMapGenerator(width*2, height*2, 15, true, 5);
 	// player = new Player({x: map.width/2 * map.scale, y:map.height/2 * map.scale})
 
-	player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
+	player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez})
 	score = 1;
 	lastMillis = 0
 	game = true
@@ -58,6 +59,7 @@ function draw() {
 
 	background(0)
 
+	menu.displayIntro();
 	if (!game){
 		menu.displayGameOver();
 		return
@@ -89,6 +91,10 @@ function draw() {
 	map2.display();
 	player.draw()
 	menu.displayInGameUI();
+	push();
+	strokeWeight(5)
+	point(mouseX, mouseY);
+	pop();
 }
 
 function checkCollisions(){
