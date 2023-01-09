@@ -62,9 +62,9 @@ class MarchingSquaresMapGenerator{
 			this.bubbles.push(new Bubble(position, r));
 		}
 
-		for (let i=0; i < 5; i++){
-			this.placeBubbleCollectible()
-		}
+		//for (let i=0; i < 5; i++){
+			//this.placeBubbleCollectible()
+		//}
 
 
 	}
