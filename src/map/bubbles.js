@@ -25,11 +25,16 @@ class Bubble {
 			// fill(255, 50);
 			strokeWeight(2);
 			circle(this.position.x, this.position.y, this.r * 2);
+			text(this.charge, this.position.x - 10, this.position.y + 10)
 			pop();
 		}
 	}
 
 	update() {
+		if (this.charge <= 0){
+			map2.bubbles.splice(map2.bubbles.indexOf(this), 1)
+		}
+
 		this.position.add(this.velocity.copy().mult(this.direction.copy()));
 
 		if(this.velocity.x > 1){
@@ -42,7 +47,7 @@ class Bubble {
 
 		for (let bubble of map2.bubbles){
 			let distanceToPlayer = p5.Vector.sub(player.position, this.position)
-			if (bubble === this && distanceToPlayer.mag() > this.r + 8){
+			if (bubble === this && distanceToPlayer.mag() > this.r + 20){
 				this.disChargeReady = true
 			}
 			if (bubble !== this){
