@@ -22,20 +22,20 @@ class Menu{
 	displayInGameUI(){
 		fill(255, 255, 20)
 		noStroke()
-		rect(15, 565, player.healthPerc * 200, 20, 40)
+		rect(15, 565-67, player.healthPerc * 200, 20, 40)
 
 		noFill()
 		stroke(255)
 		strokeWeight(2)
-		rect(15, 565, 200, 20, 40)
+		rect(15, 565-67, 200, 20, 40)
 
 		fill(0)
-		rect(400, 550, 200, 50, 20, 0, 10, 0)
+		rect(400, 550-67, 200, 50, 20, 0, 10, 0)
 
 		fill(255)
 		textSize(32)
 		textAlign(RIGHT)
-		text(score, 590, 587)
+		text(score, 590, 587-67)
 
 		noFill()
 		rect(0, 0, width, height, 10)
