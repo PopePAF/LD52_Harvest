@@ -36,7 +36,13 @@ class MarchingSquaresMapGenerator{
 			this.field.push(k);
 		}
 
-		for (let i = 0; i < this.bubbleCount; i++) {
+		this.addBubbles(this.bubbleCount);
+
+
+	}
+
+	addBubbles(count){
+		for (let i = 0; i < count; i++) {
 			let spaceOccupied = false;
 			let r;
 			let position;
@@ -55,8 +61,6 @@ class MarchingSquaresMapGenerator{
 
 			this.bubbles.push(new Bubble(position, r));
 		}
-
-
 	}
 
 	checkCircleColission(position1, r1, position2, r2){
@@ -272,6 +276,14 @@ class MarchingSquaresMapGenerator{
 						this.drawLine(c, d);
 						break;
 				}
+			}
+		}
+
+		if(this.bubbles.length === 0){
+			player.waypoint = createVector(this.width*1.5+width*2, this.height/2)
+			if(player.position.x > this.width+width){
+				player.position.x = -width;
+				this.addBubbles(5)
 			}
 		}
 	}
