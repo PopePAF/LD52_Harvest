@@ -22,9 +22,11 @@ let game = true
 let restartBtn
 
 let gameSong;
+let menuSong;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
+	menuSong = loadSound('assets/menu.mp3', null, null);
 }
 
 function setup() {
@@ -61,6 +63,13 @@ function draw() {
 	background(0)
 
 	if (!game){
+
+		if (!menuSong.isPlaying()) {
+			gameSong.stop();
+			// menuSong.setVolume(0, 5)
+			menuSong.play();
+		}
+
 		restartBtn.show()
 		textSize(40)
 		fill(200, 0, 0)
@@ -82,6 +91,7 @@ function draw() {
 	}
 	if (!gameSong.isPlaying()) {
 		gameSong.play();
+		menuSong.stop();
 	}
 
 	let delta = millis() - lastMillis;
