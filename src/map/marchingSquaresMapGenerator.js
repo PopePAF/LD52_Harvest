@@ -82,7 +82,7 @@ class MarchingSquaresMapGenerator{
 
 		do{
 			spaceOccupied = false;
-			r = random(10, 20);
+			r = random(15, 20);
 			position = createVector(random(r, width - r), random(r, height - r));
 			for(let bubble of this.bubbles){
 				if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
@@ -108,8 +108,9 @@ class MarchingSquaresMapGenerator{
 			let length = dist(v1.x,v1.y,v2.x,v2.y);
 			push();
 				camera.translateToView();
-				if(length<50)
-				line(v1.x, v1.y, v2.x, v2.y);
+				if(length<50){
+					line(v1.x, v1.y, v2.x, v2.y);
+				}
 			pop();
 		}
 
@@ -131,6 +132,7 @@ class MarchingSquaresMapGenerator{
 		push();
 			camera.translateToView();
 			noFill();
+			rectMode(CORNER)
 			rect(0, 0, this.width, this.height);
 		pop();
 	}
@@ -162,20 +164,19 @@ class MarchingSquaresMapGenerator{
 					 playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
 
 				}
-				let noiseValue = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine
-				noiseValue = constrain(noiseValue, -1, 1)
+				// let noiseValue = float(this.noise.noise3D(xoff, yoff, this.zoff))-playerShadow+bubbleShine
 
-				this.field[i][j] = noiseValue;
+
 				// this.field[i][j] = float(this.noise.noise3D(xoff, yoff, this.zoff)) + bubbleShine - playerShadow;
 				for (let bC of this.bubbleCollectibles){
 					greenSum += (bC.r * bC.r) / ((x - bC.position.x) * (x - bC.position.x) + (y - bC.position.y) * (y - bC.position.y));
 				}
-				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum + greenSum
-
+				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum + greenSum - playerShadow;
+				noiseVal = constrain(noiseVal, -1, 1)
 				if (greenSum > 0.3){
-					this.field[i][j] = {color: color(0, noiseVal * 255, 0), noiseVal: noiseVal}
+					this.field[i][j] = {color: color(0, noiseVal * 255, 0, 255*noiseVal), noiseVal: noiseVal}
 				}else{
-					this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150)), noiseVal: noiseVal}
+					this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150), 255*noiseVal), noiseVal: noiseVal}
 				}
 				//this.field[i][j] = {noiseVal: float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum, charge: charge}
 
@@ -193,10 +194,10 @@ class MarchingSquaresMapGenerator{
 			bC.update()
 		}
 
-		for (let i = 0; i < this.cols - 1; i++) {
-			for (let j = 0; j < this.rows - 1; j++) {
-				let x = i * this.rez + Math.floor(this.rez/2);
-				let y = j * this.rez + Math.floor(this.rez/2);
+		for (let i = 0; i < this.cols-1 ; i++) {
+			for (let j = 0; j < this.rows-1; j++) {
+				let x = i * this.rez
+				let y = j * this.rez
 
 				let noiseVal = this.field[i][j].noiseVal;
 				// if(noiseVal<0){
@@ -206,6 +207,7 @@ class MarchingSquaresMapGenerator{
 
 				if(noiseVal > 0.4){
 					let currentColor = this.field[i][j].color
+					currentColor.alpha = noiseVal*255;
 					ellipseMode(CORNER)
 					this.drawEllipse(x, y, this.rez,currentColor);
 				}
@@ -216,16 +218,16 @@ class MarchingSquaresMapGenerator{
 				}
 
 				let state = this.getState(
-					ceil(this.field[i][j]),
-					ceil(this.field[i + 1][j]),
-					ceil(this.field[i + 1][j + 1]),
-					ceil(this.field[i][j + 1])
+					ceil(this.field[i][j].noiseVal),
+					ceil(this.field[i + 1][j].noiseVal),
+					ceil(this.field[i + 1][j + 1].noiseVal),
+					ceil(this.field[i][j + 1].noiseVal)
 				);
 
-				let a_val = this.field[i][j] + 1;
-				let b_val = this.field[i + 1][j] + 1;
-				let c_val = this.field[i + 1][j + 1] + 1;
-				let d_val = this.field[i][j + 1] + 1;
+				let a_val = this.field[i][j].noiseVal + 1;
+				let b_val = this.field[i + 1][j].noiseVal + 1;
+				let c_val = this.field[i + 1][j + 1].noiseVal + 1;
+				let d_val = this.field[i][j + 1].noiseVal + 1;
 
 				let a = createVector();
 				let amt;

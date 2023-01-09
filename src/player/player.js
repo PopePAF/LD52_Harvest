@@ -7,7 +7,7 @@ class Player{
         this.velocity = createVector()
         this.acc = createVector()
         this.friction = 0.04
-        this.range = 150
+        this.range = 300
         this.speedLimit = 600000
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
@@ -69,8 +69,6 @@ class Player{
             this.healthPerc -= 0.05
             this.lastSecond = second()
         }
-
-
 
     }
 
