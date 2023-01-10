@@ -95,7 +95,7 @@ class Player{
             if(!this.checkInBounds()){
                 mult = 0.2;
             }
-            this.healthPerc -= this.lostHealth*mult
+            this.healthPerc -= this.lostHealth*mult // TODO: add delta to calculation
         }
 
     }
