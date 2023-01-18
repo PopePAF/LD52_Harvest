@@ -145,9 +145,7 @@ class MarchingSquaresMapGenerator{
 				noiseVal = constrain(noiseVal, -1, 1)
 				this.field[i][j] = {color: color((noiseVal * 255), charge * (noiseVal * 255), charge * (noiseVal * 150), 255*noiseVal), noiseVal: noiseVal}
 
-
 				//this.field[i][j] = {noiseVal: float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum, charge: charge}
-
 
 				yoff += this.increment;
 			}
@@ -306,13 +304,7 @@ class MarchingSquaresMapGenerator{
 
 	checkpointInElippse(h , k , x , y , a , b)
 	{
-
-		// checking the equation of
-		// ellipse with the given point
-		let p = Math.pow((x - h), 2) / Math.pow(a, 2)
-			+ Math.pow((y - k), 2) / Math.pow(b, 2);
-
-		return p;
+		return Math.pow((x - h), 2) / Math.pow(a, 2) + Math.pow((y - k), 2) / Math.pow(b, 2);
 	}
 
 	getState(a, b, c, d) {

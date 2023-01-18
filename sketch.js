@@ -6,7 +6,6 @@ let gameStarted = false;
 
 let resetCount = 0;
 
-let map;
 let map2;
 
 let camera;
@@ -63,7 +62,7 @@ function setup() {
 
 
 function draw() {
-
+	colorMode(HSB)
 	background(0)
 
 	menu.displayIntro();
