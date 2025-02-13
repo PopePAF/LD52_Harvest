@@ -10,10 +10,10 @@ class Menu{
 
 		push()
 		camera.translateToView();
-		fill(255, 0, 0)
+		fill(currentGameColor)
 		textSize(20)
 		textAlign(CENTER)
-		strokeWeight(1)
+		strokeWeight(0)
 		text("Our dimension is running out of energy.", map2.width/2, -map2.height/4-200);
 		text("[ initiating void walkers program ]", map2.width/2, -map2.height/4-180);
 		text("May the harvest begin...", map2.width/2, -map2.height/4-160);

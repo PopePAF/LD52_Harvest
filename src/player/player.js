@@ -2,7 +2,7 @@ class Player{
 
     waypoint;
 
-    constructor(initPos) {
+    constructor(initPos, color) {
         this.position = createVector(initPos.x, initPos.y);
         this.size = 15
         this.velocity = createVector()
@@ -19,6 +19,11 @@ class Player{
         this.waypoint = createVector(map2.width/2, map2.height/2);
         this.lostHealth = 0.005;
         this.gainedHealth = 0.05;
+        this.color = color;
+    }
+
+    setColor(color){
+        this.color = color;
     }
 
     drawWaypoint(){
@@ -35,6 +40,7 @@ class Player{
         push()
             camera.translateToView()
             this.drawWaypoint();
+
             //translate(this.position.x, this.position.y);
             if (this.tentacles.main){
                 this.tentacles.main.draw()
@@ -44,41 +50,70 @@ class Player{
             }
             //translate(this.position.x, this.position.y);
             // this.particleRenderer.drawParticles()
-            fill(color(255, this.hitBubbleColorMult * 255, 0))
+            fill(this.color)
             noStroke()
             ellipseMode(CENTER)
+        let angle = this.velocity.heading();
             circle(this.position.x, this.position.y, this.size)
+            //noFill();
+            //stroke(this.color)
+            //circle(this.position.x, this.position.y, this.size*5*2)
+            this.drawPlayerHealth()
         pop()
+    }
+
+    drawPlayerHealth() {
+        // Draw an arc around the player
+        let arcRadius = this.size + 5; // Adjust the radius as needed
+        let angle = this.velocity.heading();
+
+        let healthAngle = TWO_PI * this.healthPerc
+
+        push();
+        translate(this.position.x, this.position.y);
+        rotate(angle - healthAngle/2 + PI);
+
+        noFill();
+        stroke(this.color); // Set the stroke color
+        strokeWeight(2); // Set the stroke weight
+        arc(0, 0, arcRadius, arcRadius, 0, healthAngle, OPEN); // Draw the arc
+        strokeWeight(1);
+        //ellipse(0, 0, arcRadius-5, arcRadius-5); // Draw a circle in the middle to cover the center of the arc
+        ellipse(0, 0, arcRadius+5, arcRadius+5);
+        pop();
     }
 
     update(){
         if (this.hitBubbleColorMult > 0){
-            this.hitBubbleColorMult -= 0.1
+            this.hitBubbleColorMult -= 0.1 * deltaTime;
         }
         let frictionMultiplier = 1;
         if (this.tentacles.main && this.tentacles.main.ready){
-            this.applyForce(p5.Vector.sub(this.targetVector , this.position), 1)
+            this.applyForce(p5.Vector.sub(this.targetVector , this.position), deltaTime)
             frictionMultiplier = 0.3
         }
         if (this.tentacles.smallOne){
-            this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05)
+            this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05*deltaTime)
         }
 
-        this.velocity.mult(1 - this.friction * frictionMultiplier)
+        this.velocity.mult(1 - this.friction * frictionMultiplier * deltaTime)
 
         this.velocity.add(this.acc).limit(this.speedLimit)
 
         this.position.add(this.velocity)
 
         if(!this.checkInBounds()){
-            this.velocity.y *= -1;
-            this.velocity.x *= -1;
+            this.friction = 0.008;
+            //this.collideWithRoundMap();
+            //this.velocity.y *= -1;
+            //this.velocity.x *= -1;
         }else{
+            this.friction = 0.03;
             if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
-                this.velocity.x *= -1;
+                //this.velocity.x *= -1;
             }
             if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2) {
-                this.velocity.y *= -1;
+                //this.velocity.y *= -1;
             }
         }
 
@@ -91,13 +126,46 @@ class Player{
         this.checkForBubbleCollision()
 
         if (frameCount % 10 === 0 && this.healthPerc > 0 && gameStarted){
-            let mult = 1;
+            let mult = 0.08;
             if(!this.checkInBounds()){
-                mult = 0.2;
+                mult = 0.08;
             }
-            this.healthPerc -= this.lostHealth*mult // TODO: add delta to calculation
+            this.healthPerc -= this.lostHealth*mult*deltaTime// TODO: add delta to calculation
         }
 
+        this.wasdMovement();
+
+    }
+
+    collideWithRoundMap(){
+        let centerX = map2.width / 2;
+        let centerY = map2.height / 2;
+        let radius = Math.min(map2.width, map2.height) / 2;
+        let distanceFromCenter = dist(this.position.x, this.position.y, centerX, centerY);
+        let overlap = distanceFromCenter - (radius - this.size / 2);
+
+        if (overlap > 0) {
+            let direction = p5.Vector.sub(this.position, createVector(centerX, centerY)).normalize();
+            this.position.sub(direction.mult(overlap));
+            this.velocity.mult(-1);
+        }
+    }
+
+    wasdMovement(){
+        let speed = 0.8;
+
+        if (keyIsDown(87)){
+            this.applyForce(createVector(0, -1), speed)
+        }
+        if (keyIsDown(83)){
+            this.applyForce(createVector(0, 1), speed)
+        }
+        if (keyIsDown(65)){
+            this.applyForce(createVector(-1, 0), speed)
+        }
+        if (keyIsDown(68)) {
+            this.applyForce(createVector(1, 0), speed)
+        }
     }
 
     applyForce(force, multiplier){
@@ -105,12 +173,21 @@ class Player{
     }
 
     checkInBounds(){
+        //return this.checkInBounds2();
         return this.position.x < map2.width && this.position.x > 0 && this.position.y < map2.height && this.position.y > 0;
+    }
+
+    checkInBounds2() {
+        let centerX = map2.width / 2;
+        let centerY = map2.height / 2;
+        let radius = Math.min(map2.width, map2.height) / 2;
+        let distanceFromCenter = dist(this.position.x, this.position.y, centerX, centerY);
+        return distanceFromCenter <= radius;
     }
 
     shootTentacle(){
         this.targetVector = createVector(mouseX + this.position.x - camera.offset.x, mouseY + this.position.y - camera.offset.y)
-        this.tentacles.main = new Tentacle(this.position, this.targetVector, this.range)
+        this.tentacles.main = new Tentacle(this.position, this.targetVector, this.range, this.color)
         this.targetVector.sub(this.position).limit(this.range)
         this.targetVector.add(this.position)
     }
@@ -122,7 +199,7 @@ class Player{
 
     shootSmallTentacle(){
         this.targetVectorSmallOne = this.position.copy().add(p5.Vector.fromAngle(radians(Math.floor(Math.random() * 361)), 30))
-        this.tentacles.smallOne = new Tentacle(this.position, this.targetVectorSmallOne, 30)
+        this.tentacles.smallOne = new Tentacle(this.position, this.targetVectorSmallOne, 30, this.color)
     }
 
     releaseSmallTentacle(){
@@ -162,14 +239,14 @@ class Player{
 
 class Tentacle{
 
-    constructor(startPos, target, range) {
+    constructor(startPos, target, range, color) {
         this.lengthMultiplier = 0
         this.range = range
         this.target = target
         this.ready = false
         this.startPos = startPos
         this.endPos = this.startPos.copy().add(target.copy().sub(this.startPos).limit(range))
-        this.color = color(255, 0, 0)
+        this.color = color;
     }
 
     draw(){

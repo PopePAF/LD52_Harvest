@@ -28,41 +28,56 @@ let gameSong;
 
 let menu;
 
+let canvasWidth = 100;
+
+let canvasHeight = 100;
+
+let currentGameColor;
+
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
 }
 
 function setup() {
-	gameStarted = false;
+	gameStarted = true;
+	//fullscreen(true);
 	noCursor();
-	if(webglOn){
-		createCanvas(600, 533, WEBGL);
-	}else{
-		createCanvas(600, 533);
 
+	canvasWidth = windowWidth;
+	canvasHeight = windowHeight;
+	if(webglOn){
+		createCanvas(canvasWidth, canvasHeight, WEBGL);
+	}else{
+		createCanvas(canvasWidth, canvasHeight);
 	}
 
 	menu = new Menu();
 	noise = new OpenSimplexNoise(Date.now());
 	camera = new View(0, 0, width, height)
 
-	map2 = new MarchingSquaresMapGenerator(600*2, 600*2, 15, true, 5);
-	if(resetCount > 0){
-		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez})
+	this.resetMap();
+
+	if(false && resetCount > 0){
+		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez}, currentGameColor)
 	}else{
-		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez})
+		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez}, currentGameColor)
 	}
 
 	score = 0;
 	lastMillis = 0
 	game = true
-
-	frameRate(60)
+	frameRate(120)
 }
 
 
+function resetMap() {
+	currentGameColor = color(random(10, 255), random(10, 255), random(10, 255), 255);
+	map2 = new MarchingSquaresMapGenerator(600, 600, 15, true, 3, currentGameColor);
+}
+
 function draw() {
-	colorMode(HSB)
+
+	//colorMode(HSB)
 	background(0)
 
 	menu.displayIntro();
@@ -82,7 +97,7 @@ function draw() {
 		player.releaseSmallTentacle()
 
 	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
-		player.shootSmallTentacle()
+		//player.shootSmallTentacle()
 	}
 
 	player.update()
@@ -92,9 +107,34 @@ function draw() {
 		translate(-width / 2, -height / 2, 0);
 	}
 
-	map2.display();
-	player.draw()
-	menu.displayInGameUI();
+	if(map2.bubbles.length === 0){
+		player.waypoint = createVector(map2.width * 1.5 + width, map2.height / 2);
+		if(player.position.x > map2.width + width / 2){
+			let newX = -width / 2;
+			player.position.x = newX;
+			if(player.tentacles.main){
+				player.tentacles.main.endPos.x -= (width + map2.width);
+			}
+			if(player.tentacles.smallOne){
+				player.tentacles.smallOne.endPos.x = (width + map2.width);
+			}
+
+			player.waypoint = createVector(map2.width / 2, map2.height / 2);
+			this.resetMap();
+			player.setColor(currentGameColor)
+			//map2.increment = random(-1, 1);
+		}
+	}
+
+	map2.display2();
+	player.draw(currentGameColor)
+	//menu.displayInGameUI();
+
+	// Draw the framerate
+	fill(255);
+	textSize(16);
+	text("FPS: " + floor(frameRate()), 10, height - 10);
+
 	push();
 	strokeWeight(5)
 	point(mouseX, mouseY);
