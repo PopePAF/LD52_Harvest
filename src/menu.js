@@ -4,7 +4,7 @@ class Menu{
 
 	}
 	displayIntro(){
-		if(!game){
+		if(!gameRunning){
 			return;
 		}
 

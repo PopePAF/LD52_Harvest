@@ -127,13 +127,13 @@ class Player{
 
         this.checkForBubbleCollision()
 
-        if (frameCount % 10 === 0 && this.healthPerc > 0 && gameStarted && !godMode){
+        if (frameCount % 10 === 0 && this.healthPerc > 0 && gameRunning && !godMode){
             let mult = 0.2;
             this.healthPerc -= this.lostHealth*mult*deltaTime// TODO: add delta to calculation
         }
 
         if(this.healthPerc <= 0){
-            game = false;
+            gameRunning = false;
         }
 
         this.wasdMovement();
@@ -244,7 +244,7 @@ class Player{
                 bubble.velocity.limit(bubble.maxSpeed)
                 bubble.direction.set(this.velocity.copy().normalize())
                 if (bubble.velocity.mag() > 5 && bubble.disChargeReady){
-                    if (bubble.charge > 0 && gameStarted){
+                    if (bubble.charge > 0 && gameRunning){
                         if(this.healthPerc <= 1 - this.gainedHealth){
                             this.healthPerc += this.gainedHealth
                         }else if (this.healthPerc < 1){

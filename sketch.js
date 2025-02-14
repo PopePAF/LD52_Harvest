@@ -1,10 +1,7 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
-let godMode = true;
 
 // TODO: look at that: https://jsfiddle.net/klenwell/3ZdXf/
-
-let gameStarted = false;
 
 let resetCount = 0;
 
@@ -18,32 +15,30 @@ let player
 
 let noise;
 
-let imgs = [];
-
-let webglOn = false;
-
 let score = 0
 
-let game = true
+let gameRunning = true
 
 let gameSong;
 
 let menu;
 
-let canvasWidth = 100;
-
-let canvasHeight = 100;
+let canvasWidth;
+let canvasHeight;
 
 let currentGameColor;
 
-let autoMode = false;
-let showFrameRate = false;
+// BASIC SETTINGS
+let autoMode			= false;
+let showFrameRate		= false;
+let webglOn			= false;
+let godMode			= true;
+
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
 }
 
 function setup() {
-	gameStarted = true;
 	//fullscreen(true);
 	noCursor();
 
@@ -69,7 +64,7 @@ function setup() {
 
 	score = 0;
 	lastMillis = 0
-	game = true
+	gameRunning = true
 	frameRate(120)
 }
 
@@ -91,7 +86,7 @@ function draw() {
 	background(0)
 
 	//menu.displayIntro();
-	if (!game){
+	if (!gameRunning){
 		menu.displayGameOver();
 		return
 	}
@@ -203,7 +198,6 @@ function keyPressed(){
 }
 
 function mousePressed(e){
-	gameStarted = true;
 	if (e.button === 0){
 		player.shootTentacle()
 	}else if(e.button === 2){
