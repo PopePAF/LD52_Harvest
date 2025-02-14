@@ -54,6 +54,8 @@ class Player{
             noStroke()
             ellipseMode(CENTER)
             let angle = this.velocity.heading();
+            noFill()
+        stroke(this.color)
             circle(this.position.x, this.position.y, this.size)
             //noFill();
             //stroke(this.color)
@@ -61,7 +63,7 @@ class Player{
             this.drawPlayerHealth()
 
             stroke(this.color)
-            line(this.position.x, this.position.y, this.position.x + this.velocity.x*2, this.position.y + this.velocity.y*2)
+            //line(this.position.x, this.position.y, this.position.x + this.velocity.x*2, this.position.y + this.velocity.y*2)
         pop()
     }
 
@@ -87,18 +89,23 @@ class Player{
     }
 
     update(){
+        if(autoMode){
+            this.autoMove();
+        }
+
         if (this.hitBubbleColorMult > 0){
             this.hitBubbleColorMult -= 0.1 * deltaTime;
         }
 
-        /*
+
         if (this.tentacles.main && this.tentacles.main.ready){
-            this.applyForce(p5.Vector.sub(this.targetVector , this.position).limit(this.speedLimit), 0.3*deltaTime)
+            this.applyForce(p5.Vector.sub(this.targetVector , this.position).normalize(), 0.3*deltaTime)
+            //this.applyForce(this.targetVector, 0.3*deltaTime)
         }
         if (this.tentacles.smallOne){
             this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05*deltaTime)
         }
-        */
+
 
 
         this.velocity.add(this.acc).limit(this.speedLimit)
@@ -108,17 +115,8 @@ class Player{
 
         if(!this.checkInBounds2()){
             this.friction = 0.0025;
-            //this.collideWithRoundMap();
-            //this.velocity.y *= -1;
-            //this.velocity.x *= -1;
         }else{
             this.friction = 0.005;
-            if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
-                //this.velocity.x *= -1;
-            }
-            if (this.position.y > map2.height - this.size/2 || this.position.y < this.size/2) {
-                //this.velocity.y *= -1;
-            }
         }
 
         this.acc.mult(0)
@@ -129,12 +127,13 @@ class Player{
 
         this.checkForBubbleCollision()
 
-        if (frameCount % 10 === 0 && this.healthPerc > 0 && gameStarted){
-            let mult = 0.08;
-            if(!this.checkInBounds()){
-                mult = 0.08;
-            }
+        if (frameCount % 10 === 0 && this.healthPerc > 0 && gameStarted && !godMode){
+            let mult = 0.2;
             this.healthPerc -= this.lostHealth*mult*deltaTime// TODO: add delta to calculation
+        }
+
+        if(this.healthPerc <= 0){
+            game = false;
         }
 
         this.wasdMovement();
@@ -152,6 +151,30 @@ class Player{
             let direction = p5.Vector.sub(this.position, createVector(centerX, centerY)).normalize();
             this.position.sub(direction.mult(overlap));
             this.velocity.mult(-1);
+        }
+    }
+
+    autoMove() {
+        if (map2.bubbles.length === 0) {
+            let direction = p5.Vector.sub(this.waypoint, this.position).normalize();
+            this.applyForce(direction, 0.03 * deltaTime);
+            return;
+        }
+
+        let closestBubble = null;
+        let minDist = Infinity;
+
+        for (let bubble of map2.bubbles) {
+            let distance = p5.Vector.dist(this.position, bubble.position);
+            if (distance < minDist) {
+                minDist = distance;
+                closestBubble = bubble;
+            }
+        }
+
+        if (closestBubble) {
+            let direction = p5.Vector.sub(closestBubble.position, this.position).normalize();
+            this.applyForce(direction, 0.03 * deltaTime);
         }
     }
 

@@ -1,6 +1,8 @@
 // Set the dimensions of the map
 // import {UI} from "./src/utility/debugUiManager.js";
-let godMode = false;
+let godMode = true;
+
+// TODO: look at that: https://jsfiddle.net/klenwell/3ZdXf/
 
 let gameStarted = false;
 
@@ -34,6 +36,8 @@ let canvasHeight = 100;
 
 let currentGameColor;
 
+let autoMode = false;
+let showFrameRate = false;
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
 }
@@ -71,10 +75,12 @@ function setup() {
 
 
 function resetMap() {
-	currentGameColor = color(random(10, 255), random(10, 255), random(10, 255), 255);
-	let mapSize = random(300, 700);
+	currentGameColor = color(random(50, 255), random(50, 255), random(50, 255), 255);
+	let mapSize = random(300, 1200);
 	let bubbleCount = random(1, 5);
-	let rezolution = random(12, 20);
+	// the rezolution should be 12 if the mapSize is 300 and 24 if the mapSize is 1200
+	let rezolution = map(mapSize, 300, 1200, 8, 30);
+	//let rezolution = random(12, 20);
 	let lerp = true;
 	map2 = new MarchingSquaresMapGenerator(mapSize, mapSize, rezolution, lerp, bubbleCount, currentGameColor);
 }
@@ -84,7 +90,7 @@ function draw() {
 	//colorMode(HSB)
 	background(0)
 
-	menu.displayIntro();
+	//menu.displayIntro();
 	if (!game){
 		menu.displayGameOver();
 		return
@@ -134,10 +140,12 @@ function draw() {
 	player.draw(currentGameColor)
 	//menu.displayInGameUI();
 
-	// Draw the framerate
-	//fill(currentGameColor);
-	//textSize(16);
-	//text("FPS: " + floor(frameRate()), 10, height - 10);
+	//Draw the framerate
+	if(showFrameRate){
+		fill(currentGameColor);
+		textSize(16);
+		text("FPS: " + floor(frameRate()), 10, height - 10);
+	}
 
 	push();
 	strokeWeight(5)
@@ -173,9 +181,24 @@ function restartGame(){
 }
 
 function keyPressed(){
-	if (keyCode === 82) { // 82 is the key code for "r"
+	// reset the game if 'r' is pressed
+	if (keyCode === 82) {
 		resetCount += 1;
 		setup();
+	}
+	// toggle autoMode if 't' is pressed
+	if (keyCode === 84){
+		autoMode = !autoMode;
+	}
+
+	// toggle frame rate display if 'f' is pressed
+	if (keyCode === 70){
+		showFrameRate = !showFrameRate;
+	}
+
+	// toggle godMode if 'g' is pressed
+	if (keyCode === 71){
+		godMode = !godMode;
 	}
 }
 

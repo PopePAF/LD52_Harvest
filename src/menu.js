@@ -40,10 +40,6 @@ class Menu{
 		noFill()
 		rect(0, 0, width, height, 10)
 		stroke(255,0,0)
-
-		if (player.healthPerc <= 0){
-			game = godMode;
-		}
 	}
 
 	displayGameOver(){

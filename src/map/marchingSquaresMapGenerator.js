@@ -30,7 +30,7 @@ class MarchingSquaresMapGenerator{
 		//this.lerp = Math.random() < 0.5;
 		this.lerp = _lerp;
 		this.increment = random(-1, 1)
-		this.zspeed = random(0.001, 0.0025);
+		this.zspeed = 0; // will be set within update to represent energy amount aka bubble count
 		this.backgroundNoiseThreshold = random(-1, 1);
 		this.color = color;
 		this.shouldFill = random() < 0.5;
@@ -208,212 +208,11 @@ class MarchingSquaresMapGenerator{
 		}
 		pop();
 	}
-	display(){
-		this.displayBorders();
-		let xoff = 0;
-		for (let i = 0; i < this.cols; i++) {
-			xoff += this.increment;
-			let yoff = 0;
-			for (let j = 0; j < this.rows; j++) {
-				let x = i * this.rez;
-				let y = j * this.rez;
-
-
-				// BUBBLE INTERFERENCE
-				let sum = 0;
-				let charge = 0;
-				let bubbleShine = 0;
-				for (let b of this.bubbles) {
-					bubbleShine += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
-					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
-					if (b.charge > charge && b.r * b.r > ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y))){
-						charge = b.charge
-					}
-				}
-
-				// PLAYER INTERFERENCE
-				let shadowRadius = player.size * 5;
-				let playerShadow = 0;
-				if(this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1){
-					 playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
-				}
-
-				let noiseVal = float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum - playerShadow;
-				noiseVal = constrain(noiseVal, -1, 1)
-
-				console.group(noiseVal)
-
-				let fieldColor = color(
-					red(this.color),
-					green(this.color),
-					blue(this.color),
-					min(255 * noiseVal, 255)
-				)
-				this.field[i][j] = {color: fieldColor , noiseVal: noiseVal}
-
-				//this.field[i][j] = {noiseVal: float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum, charge: charge}
-
-				yoff += this.increment;
-			}
-		}
-		this.zoff += this.zspeed;
-
-		for (let b of this.bubbles) {
-			b.update();
-			// b.show();
-		}
-
-		for (let i = 0; i < this.cols-1 ; i++) {
-			for (let j = 0; j < this.rows-1; j++) {
-				let x = i * this.rez
-				let y = j * this.rez
-
-				let noiseVal = this.field[i][j].noiseVal;
-				// if(noiseVal<0){
-				// 	let currentColor = color(0, this.field[i][j] * -255, 0);
-				// 	this.drawEllipse(x, y, this.rez,currentColor);
-				// }
-
-				if(noiseVal > this.backgroundNoiseThreshold){
-					let currentColor = this.field[i][j].color
-					//currentColor.alpha = noiseVal*255;
-					this.renderPositives(x, y, this.rez,currentColor, 0);
-
-					//this.drawEllipse(x, y, this.rez, this.color);
-				}
-
-
-				if(!camera.pointInView(x, y)){
-					continue;
-				}
-
-				let state = this.getState(
-					ceil(this.field[i][j].noiseVal),
-					ceil(this.field[i + 1][j].noiseVal),
-					ceil(this.field[i + 1][j + 1].noiseVal),
-					ceil(this.field[i][j + 1].noiseVal)
-				);
-
-				let a_val = this.field[i][j].noiseVal + 1;
-				let b_val = this.field[i + 1][j].noiseVal + 1;
-				let c_val = this.field[i + 1][j + 1].noiseVal + 1;
-				let d_val = this.field[i][j + 1].noiseVal + 1;
-
-				let a = createVector();
-				let amt;
-
-				if(this.lerp){
-					amt = (1 - a_val) / (b_val - a_val);
-					a.x = lerp(x, x + this.rez, amt);
-				}else{
-					a.x = x;
-				}
-				a.y = y;
-
-				let b = createVector();
-				if(this.lerp){
-					amt = (1 - b_val) / (c_val - b_val);
-					b.y = lerp(y, y + this.rez, amt);
-				}else{
-					b.y = y;
-				}
-				b.x = x + this.rez;
-
-				let c = createVector();
-				if(this.lerp){
-					amt = (1 - d_val) / (c_val - d_val);
-					c.x = lerp(x, x + this.rez, amt);
-				}else{
-					c.x = x;
-				}
-				c.y = y + this.rez;
-
-				let d = createVector();
-				if(this.lerp){
-					amt = (1 - a_val) / (d_val - a_val);
-					d.y = lerp(y, y + this.rez, amt);
-				}else{
-					d.y = y;
-				}
-				d.x = x;
-
-				stroke(this.color);
-				strokeWeight(2);
-				//color(random(255))
-				// state = 0;
-				switch (state) {
-					case 1:
-						this.drawLine(c, d);
-						break;
-					case 2:
-						this.drawLine(b, c);
-						break;
-					case 3:
-						this.drawLine(b, d);
-						break;
-					case 4:
-						this.drawLine(a, b);
-						break;
-					case 5:
-						this.drawLine(a, d);
-						this.drawLine(b, c);
-						break;
-					case 6:
-						this.drawLine(a, c);
-						break;
-					case 7:
-						this.drawLine(a, d);
-						break;
-					case 8:
-						this.drawLine(a, d);
-						break;
-					case 9:
-						this.drawLine(a, c);
-						break;
-					case 10:
-						this.drawLine(a, b);
-						this.drawLine(c, d);
-						break;
-					case 11:
-						this.drawLine(a, b);
-						break;
-					case 12:
-						this.drawLine(b, d);
-						break;
-					case 13:
-						this.drawLine(b, c);
-						break;
-					case 14:
-						this.drawLine(c, d);
-						break;
-				}
-			}
-		}
-/*
-		if(this.bubbles.length === 0){
-			player.waypoint = createVector(this.width*1.5+width, this.height/2)
-			if(player.position.x > this.width+width/2){
-				let newX = -width/2;
-				player.position.x = newX;
-				if(player.tentacles.main){
-					player.tentacles.main.endPos.x -= (width+this.width);
-				}
-				if(player.tentacles.smallOne){
-					player.tentacles.smallOne.endPos.x = (width+this.width);
-				}
-
-
-				player.waypoint = createVector(map2.width/2, map2.height/2);
-				this.addBubbles(5)
-				this.increment = random(-1, 1);
-			}
-		}
-		*/
-	}
 
 	display2() {
+		this.zspeed = random(0.0001, 0.005) * this.bubbles.length;
 		this.displayBorders3();
-		let xoff = 0;
+		let xoff = 0; // player.position.x / 100;
 		let centerX = this.width / 2;
 		let centerY = this.height / 2;
 		let radius = Math.min(this.width, this.height) / 2;
@@ -463,6 +262,7 @@ class MarchingSquaresMapGenerator{
 				let playerShadow = 0;
 				if (this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1) {
 					playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
+					//playerShadow = + 50;
 				}
 
 				let noiseVal = (float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum - playerShadow);
@@ -479,7 +279,7 @@ class MarchingSquaresMapGenerator{
 				yoff += this.increment;
 			}
 		}
-		this.zoff +this.zspeed;
+		this.zoff += this.zspeed;
 
 		for (let b of this.bubbles) {
 			b.update();

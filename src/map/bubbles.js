@@ -31,6 +31,7 @@ class Bubble {
 	}
 
 	update() {
+
 		if (this.charge <= 0){
 			map2.bubbles.splice(map2.bubbles.indexOf(this), 1)
 		}
