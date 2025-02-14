@@ -7,9 +7,9 @@ class Player{
         this.size = 15
         this.velocity = createVector()
         this.acc = createVector()
-        this.friction = 0.04
+        this.friction = 0;
         this.range = 300
-        this.speedLimit = 600000
+        this.speedLimit = 15
         this.targetVector = createVector(initPos.x, initPos.y)
         this.tentacles = {main: null, smallOne: null}
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
@@ -53,12 +53,15 @@ class Player{
             fill(this.color)
             noStroke()
             ellipseMode(CENTER)
-        let angle = this.velocity.heading();
+            let angle = this.velocity.heading();
             circle(this.position.x, this.position.y, this.size)
             //noFill();
             //stroke(this.color)
             //circle(this.position.x, this.position.y, this.size*5*2)
             this.drawPlayerHealth()
+
+            stroke(this.color)
+            line(this.position.x, this.position.y, this.position.x + this.velocity.x*2, this.position.y + this.velocity.y*2)
         pop()
     }
 
@@ -87,28 +90,29 @@ class Player{
         if (this.hitBubbleColorMult > 0){
             this.hitBubbleColorMult -= 0.1 * deltaTime;
         }
-        let frictionMultiplier = 1;
+
+        /*
         if (this.tentacles.main && this.tentacles.main.ready){
-            this.applyForce(p5.Vector.sub(this.targetVector , this.position), deltaTime)
-            frictionMultiplier = 0.3
+            this.applyForce(p5.Vector.sub(this.targetVector , this.position).limit(this.speedLimit), 0.3*deltaTime)
         }
         if (this.tentacles.smallOne){
             this.applyForce(p5.Vector.sub(this.targetVectorSmallOne , this.position), 0.05*deltaTime)
         }
+        */
 
-        this.velocity.mult(1 - this.friction * frictionMultiplier * deltaTime)
 
         this.velocity.add(this.acc).limit(this.speedLimit)
+        this.velocity.mult(1 - this.friction * deltaTime)
 
         this.position.add(this.velocity)
 
-        if(!this.checkInBounds()){
-            this.friction = 0.008;
+        if(!this.checkInBounds2()){
+            this.friction = 0.0025;
             //this.collideWithRoundMap();
             //this.velocity.y *= -1;
             //this.velocity.x *= -1;
         }else{
-            this.friction = 0.03;
+            this.friction = 0.005;
             if (this.position.x > map2.width - this.size/2 || this.position.x < this.size/2) {
                 //this.velocity.x *= -1;
             }
@@ -152,24 +156,25 @@ class Player{
     }
 
     wasdMovement(){
-        let speed = 0.8;
+        let speed = 0.03 * deltaTime;
 
-        if (keyIsDown(87)){
+        if (keyIsDown(87) || keyIsDown(UP_ARROW)){
             this.applyForce(createVector(0, -1), speed)
         }
-        if (keyIsDown(83)){
+        if (keyIsDown(83) || keyIsDown(DOWN_ARROW)){
             this.applyForce(createVector(0, 1), speed)
         }
-        if (keyIsDown(65)){
+        if (keyIsDown(65) || keyIsDown(LEFT_ARROW)){
             this.applyForce(createVector(-1, 0), speed)
         }
-        if (keyIsDown(68)) {
+        if (keyIsDown(68) || keyIsDown(RIGHT_ARROW)) {
             this.applyForce(createVector(1, 0), speed)
         }
     }
 
     applyForce(force, multiplier){
-        this.acc.add(force.copy().normalize().mult(multiplier))
+        this.acc.add(force.copy().mult(multiplier))
+        //this.acc.add(force.copy().normalize().mult(multiplier))
     }
 
     checkInBounds(){

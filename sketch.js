@@ -57,7 +57,7 @@ function setup() {
 
 	this.resetMap();
 
-	if(false && resetCount > 0){
+	if(true && resetCount > 0){
 		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez}, currentGameColor)
 	}else{
 		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez}, currentGameColor)
@@ -72,7 +72,11 @@ function setup() {
 
 function resetMap() {
 	currentGameColor = color(random(10, 255), random(10, 255), random(10, 255), 255);
-	map2 = new MarchingSquaresMapGenerator(600, 600, 15, true, 3, currentGameColor);
+	let mapSize = random(300, 700);
+	let bubbleCount = random(1, 5);
+	let rezolution = random(12, 20);
+	let lerp = true;
+	map2 = new MarchingSquaresMapGenerator(mapSize, mapSize, rezolution, lerp, bubbleCount, currentGameColor);
 }
 
 function draw() {
@@ -131,9 +135,9 @@ function draw() {
 	//menu.displayInGameUI();
 
 	// Draw the framerate
-	fill(255);
-	textSize(16);
-	text("FPS: " + floor(frameRate()), 10, height - 10);
+	//fill(currentGameColor);
+	//textSize(16);
+	//text("FPS: " + floor(frameRate()), 10, height - 10);
 
 	push();
 	strokeWeight(5)

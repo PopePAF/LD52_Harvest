@@ -15,7 +15,7 @@ class MarchingSquaresMapGenerator{
 
 	bubbleCount;
 
-	backgroundNoiseThreshold = 0.3;
+	backgroundNoiseThreshold = 0.01;
 
 	bubbles = [];
 
@@ -28,11 +28,20 @@ class MarchingSquaresMapGenerator{
 		this.height = _height;
 		this.rez = _rez;
 		//this.lerp = Math.random() < 0.5;
-		this.lerp = true;
+		this.lerp = _lerp;
 		this.increment = random(-1, 1)
-		this.zspeed = random(0.0001, 0.05);
+		this.zspeed = random(0.001, 0.0025);
 		this.backgroundNoiseThreshold = random(-1, 1);
 		this.color = color;
+		this.shouldFill = random() < 0.5;
+		this.hasEllipses = Math.random() < 0.5;
+		this.ellipseMode = CENTER;
+		this.ellipseMultiplier = random(0.2, 1.2);
+		this.hasRects = Math.random() < 0.5;
+		this.rectMode = CENTER;
+		this.rectMultiplier = random(0.2, 1.2);
+		this.rectRotation = random(0, TWO_PI);
+		this.rectRotationRand = true;
 
 		this.noise = new OpenSimplexNoise(Date.now());
 		this.cols = 1 + this.width / this.rez;
@@ -80,12 +89,11 @@ class MarchingSquaresMapGenerator{
 
 
 	drawLine(v1, v2) {
-		// console.log("drowing line?")
 		if(camera.lineInView(v1.x, v1.y, v2.x, v2.y)){
-			// console.log("line in view")
 			let length = dist(v1.x,v1.y,v2.x,v2.y);
 			push();
 				camera.translateToView();
+				// this ensures the players interference glitches dont get too messy... :D
 				if(length<50){
 					line(v1.x, v1.y, v2.x, v2.y);
 				}
@@ -94,14 +102,39 @@ class MarchingSquaresMapGenerator{
 
 	}
 
-	drawEllipse(x, y, r, color){
+	renderPositives(x, y, r, color, rotation){
 		if(camera.pointInView(x, y)){
 			// console.log("line in view")
 			push();
+			translate(x, y)
 			camera.translateToView();
-			noStroke();
-			fill(color);
-			ellipse(x, y, r, r);
+
+			if(this.shouldFill){
+				noStroke();
+				fill(color);
+			}else{
+				stroke(color)
+				strokeWeight(3)
+				noFill()
+			}
+
+			if(this.hasEllipses){
+				ellipseMode(this.ellipseMode)
+				ellipse(0, 0, r*this.ellipseMultiplier, r*this.ellipseMultiplier);
+			}
+
+			if(this.hasRects){
+				rotate(this.rectRotation)
+				rectMode(this.rectMode)
+				rect(0, 0, r*this.rectMultiplier, r*this.rectMultiplier);
+			}
+
+			if(!this.hasEllipses && !this.hasRects){
+
+				stroke(color)
+				noFill()
+				point(0, 0);
+			}
 			pop();
 		}
 	}
@@ -112,15 +145,6 @@ class MarchingSquaresMapGenerator{
 			noFill();
 			rectMode(CORNER)
 			rect(0, 0, this.width, this.height);
-		pop();
-	}
-
-	displayBorders2(color){
-		push();
-		camera.translateToView();
-		noFill();
-		ellipseMode(CORNER)
-		ellipse(0, 0, this.width+10, this.height+10);
 		pop();
 	}
 
@@ -157,8 +181,11 @@ class MarchingSquaresMapGenerator{
 			// some sparks, lighning style lines...
 			this.drawSparks(intersections[0].x, intersections[0].y, 0.5);
 			this.drawSparks(intersections[1].x, intersections[1].y, 0.5);
+			//strokeWeight(4)
+			//arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
 
 		}
+		strokeWeight(4)
 		arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
 
 		pop();
@@ -167,7 +194,7 @@ class MarchingSquaresMapGenerator{
 	drawSparks(x, y, intensity) {
 		push();
 		stroke(this.color); // Yellow color for sparks
-		strokeWeight(2);
+		strokeWeight(3);
 		let centerX = this.width / 2;
 		let centerY = this.height / 2;
 		//let baseAngle = atan2(y - centerY, x - centerX);
@@ -250,8 +277,7 @@ class MarchingSquaresMapGenerator{
 				if(noiseVal > this.backgroundNoiseThreshold){
 					let currentColor = this.field[i][j].color
 					//currentColor.alpha = noiseVal*255;
-					ellipseMode(CORNER)
-					this.drawEllipse(x, y, this.rez,currentColor);
+					this.renderPositives(x, y, this.rez,currentColor, 0);
 
 					//this.drawEllipse(x, y, this.rez, this.color);
 				}
@@ -400,7 +426,14 @@ class MarchingSquaresMapGenerator{
 				let y = j * this.rez;
 				let distanceFromCenter = dist(x, y, centerX, centerY);
 
-				if (distanceFromCenter > radius) {
+				if (distanceFromCenter > radius-20) {
+					let fieldColor = color(
+						red(this.color),
+						green(this.color),
+						blue(this.color),
+						0
+					);
+					this.field[i][j] = { color: fieldColor, noiseVal: 0 };
 					continue;
 				}
 
@@ -446,7 +479,7 @@ class MarchingSquaresMapGenerator{
 				yoff += this.increment;
 			}
 		}
-		this.zoff += this.zspeed;
+		this.zoff +this.zspeed;
 
 		for (let b of this.bubbles) {
 			b.update();
@@ -456,22 +489,22 @@ class MarchingSquaresMapGenerator{
 			for (let j = 0; j < this.rows - 1; j++) {
 				let x = i * this.rez;
 				let y = j * this.rez;
+
+				if (!camera.pointInView(x, y)) {
+					continue;
+				}
+
 				let distanceFromCenter = dist(x, y, centerX, centerY);
 
-				if (distanceFromCenter > radius) {
-					continue;
+				if (distanceFromCenter > radius - 20) {
+					//continue;
 				}
 
 				let noiseVal = this.field[i][j].noiseVal;
 
 				if (noiseVal > this.backgroundNoiseThreshold) {
 					let currentColor = this.field[i][j].color;
-					ellipseMode(CORNER);
-					this.drawEllipse(x, y, this.rez, currentColor);
-				}
-
-				if (!camera.pointInView(x, y)) {
-					continue;
+					this.renderPositives(x, y, this.rez, currentColor, 0);
 				}
 
 				let state = this.getState(
