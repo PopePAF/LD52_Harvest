@@ -37,10 +37,10 @@ let godMode			= true;
 let gravityOn			= true;
 
 // MAP SETTINGS
-let minMapSize			= 100;
+let minMapSize			= 200;
 let maxMapSize			= 2000;
-let minRez = 10;
-let maxRez = 25;
+let minRez = 15;
+let maxRez = 30;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
@@ -86,7 +86,7 @@ function setup() {
 function resetMap() {
 	currentGameColor = color(random(0, 360), 360, 360, 255);
 	let mapSize = random(minMapSize, maxMapSize);
-	let bubbleCount = random(1, 2);
+	let bubbleCount = random(1);
 	// the rezolution should be 12 if the mapSize is 300 and 24 if the mapSize is 1200
 	let rezolution = map(mapSize, minMapSize, maxMapSize, minRez, maxRez);
 	//let rezolution = random(12, 20);
@@ -131,6 +131,7 @@ function draw() {
 
 	map2.display2();
 	player.draw()
+
 	//menu.displayInGameUI();
 
 	//Draw the framerate

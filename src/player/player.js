@@ -5,7 +5,7 @@ class Player{
     constructor(initPos, color) {
         this.position = createVector(initPos.x, initPos.y);
         this.size = 30
-        this.auraSize = 50
+        this.auraSize = 80
         this.speed = 0.8
         this.speedLimit = 8
         this.velocity = createVector()

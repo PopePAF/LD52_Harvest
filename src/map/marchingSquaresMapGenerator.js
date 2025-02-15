@@ -46,7 +46,7 @@ class MarchingSquaresMapGenerator{
 		this.rectRotationRand = true;
 		this.normalHue = Math.random() < 0.5;
 		this.normalBrightness = Math.random() < 0;
-		this.showBorder = Math.random() < 0;
+		this.showBorder = Math.random() < 1;
 
 		this.noise = new OpenSimplexNoise(Date.now());
 		this.cols = 1 + this.width / this.rez;
@@ -281,75 +281,89 @@ class MarchingSquaresMapGenerator{
 
 
 				// Calculate the value
-				//let edgeValue = 255 * normalizedDistance;
+					//let edgeValue = 255 * normalizedDistance;
 
-				// Ensure the value is within the range of 0 to 255
+					// Ensure the value is within the range of 0 to 255
 
-				// BUBBLE INTERFERENCE
-				let sum = 0;
-				let charge = 0;
-				let bubbleShine = 0;
-				for (let b of this.bubbles) {
-					bubbleShine += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
-					sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
-					if (b.charge > charge && b.r * b.r > ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y))) {
-						charge = b.charge;
+					// BUBBLE INTERFERENCE
+					let sum = 0;
+					let charge = 0;
+					let bubbleShine = 0;
+					for (let b of this.bubbles) {
+						bubbleShine += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
+						sum += (b.r * b.r) / ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y));
+						if (b.charge > charge && b.r * b.r > ((x - b.position.x) * (x - b.position.x) + (y - b.position.y) * (y - b.position.y))) {
+							charge = b.charge;
+						}
 					}
-				}
 
-				// PLAYER INTERFERENCE
-				let playerShadow = 0;
+					// PLAYER INTERFERENCE
+					let playerShadow = 0;
 
-				let shadowRadius = player.auraSize;
-				if (this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1) {
-					//playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
-					if(this.bubbles.length > 0){
-						playerShadow = random(0.1, 0.9) * dist(x, y, player.position.x, player.position.y) / shadowRadius;
+					let shadowRadius = player.auraSize;
+					if (this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1) {
+						//playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
+						if (this.bubbles.length > 0) {
+							playerShadow = random(0.1, 0.9) * dist(x, y, player.position.x, player.position.y) / shadowRadius;
+						} else {
+							playerShadow = 0.05;
+						}
+					}
+
+					let noise = 0;
+					if(this.bubbles.length > 0) {
+						noise = this.noise.noise3D(xoff, yoff, this.zoff);
 					}else{
-						playerShadow = 0.9;
+						noise = this.field[i][j].noiseVal - 0.0001 * delta;
+						this.width -= 0.0004 * delta;
+						this.height -= 0.0004 * delta;
 					}
-				}
 
-				let noiseVal = (float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum - playerShadow);
-				noiseVal = constrain(noiseVal, -1, 1);
+					let noiseVal = (float(noise) + sum - playerShadow);
 
-				let fieldColor = color(
-					// HUE ###########################################################
-					this.normalHue ? hue(this.color) : (hue(this.color) + 360-map(normalizedDistance, 0, 1, 0, 180)) % 360,
-					//hue(this.color),
+					if(this.bubbles.length > 0) {
+						noiseVal = constrain(noiseVal, -1, 1);
+					}else{
+						noiseVal = constrain(noiseVal, -0.2, 1);
+					}
 
-					// color based on proximity to center
-					//(hue(this.color) + 360-map(normalizedDistance, 0, 1, 0, 180)) % 360,
+					let fieldColor = color(
+						// HUE ###########################################################
+						this.normalHue ? hue(this.color) : (hue(this.color) + map(millis(), 0, 10000, 0, 360)) % 360,
+						//hue(this.color),
 
-					// hue based on noise value
-					//(hue(this.color) + map(noiseVal, -1, 1, 0, 360)) % 360,
+						// color based on proximity to center
+						//(hue(this.color) + 360-map(normalizedDistance, 0, 1, 0, 180)) % 360,
 
-					// hue base on distance from player
-					//(hue(this.color) + map(dist(x, y, player.position.x, player.position.y), 0, 100, 0, 100)) % 360,
+						// hue based on noise value
+						//(hue(this.color) + map(noiseVal, -1, 1, 0, 360)) % 360,
 
-					// hue based on time
-					//(hue(this.color) + map(millis(), 0, 10000, 0, 360)) % 360,
+						// hue base on distance from player
+						//(hue(this.color) + map(dist(x, y, player.position.x, player.position.y), 0, 100, 0, 100)) % 360,
 
-					saturation(this.color),
+						// hue based on time
+						//(hue(this.color) + map(millis(), 0, 10000, 0, 360)) % 360,
 
-					// BRIGHTNESS #####################################################
-					this.normalBrightness ? brightness(this.color) : 360-map(normalizedDistance, 0, 1, 0, 360),
-					// normal brightness
-					//brightness(this.color),
+						saturation(this.color),
 
-					// brighter at edge
-					//map(normalizedDistance, 0, 1, 0, 360),
+						// BRIGHTNESS #####################################################
+						this.normalBrightness ? brightness(this.color) : 360 - map(normalizedDistance, 0, 1, 0, 360),
+						// normal brightness
+						//brightness(this.color),
 
-					// brighter at center
-					//360-map(normalizedDistance, 0, 1, 0, 360),
+						// brighter at edge
+						//map(normalizedDistance, 0, 1, 0, 360),
 
-					// transparency based on noise value
-					//255,
-					min(255 * noiseVal, 255)
-				);
-				this.field[i][j] = { color: fieldColor, noiseVal: noiseVal };
+						// brighter at center
+						//360-map(normalizedDistance, 0, 1, 0, 360),
 
-				yoff += this.increment;
+						// transparency based on noise value
+						//255,
+						min(255 * noiseVal, 255)
+					);
+					this.field[i][j] = {color: fieldColor, noiseVal: noiseVal};
+
+					yoff += this.increment;
 			}
 		}
 		this.zoff += this.zspeed;
