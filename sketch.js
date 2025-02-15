@@ -27,23 +27,33 @@ let canvasWidth;
 let canvasHeight;
 
 let currentGameColor;
+let delta = 0;
 
 // BASIC SETTINGS
 let autoMode			= false;
 let showFrameRate		= false;
 let webglOn			= false;
 let godMode			= true;
+let gravityOn			= true;
+
+// MAP SETTINGS
+let minMapSize			= 100;
+let maxMapSize			= 2000;
+let minRez = 10;
+let maxRez = 25;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
 }
 
 function setup() {
+	frameRate(120)
 	//fullscreen(true);
 	noCursor();
 
 	canvasWidth = windowWidth;
 	canvasHeight = windowHeight;
+
 	if(webglOn){
 		createCanvas(canvasWidth, canvasHeight, WEBGL);
 	}else{
@@ -56,33 +66,38 @@ function setup() {
 
 	this.resetMap();
 
-	if(true && resetCount > 0){
-		player = new Player({x: map2.rows/2 * map2.rez, y:map2.cols/2 * map2.rez}, currentGameColor)
-	}else{
-		player = new Player({x: map2.rows/2 * map2.rez, y:-map2.cols/4 * map2.rez}, currentGameColor)
-	}
+	// spawn player
+	let newPosition = createVector(map2.cols/2 * map2.rez - map2.height/2 - 90, map2.rows/2 * map2.rez);
+	player = new Player(newPosition, color(350, 360, 300));
 
+	// send player into orbit around map
+	if(false) {
+		let distanceFromMapCenter = dist(player.position.x, player.position.y, map2.width / 2, map2.height / 2);
+		let gravitationalForceMagnitude = 0.2;
+		let requiredSpeed = Math.sqrt(gravitationalForceMagnitude * distanceFromMapCenter);
+		player.applyForce(createVector(0, 1).setMag(requiredSpeed));
+	}
 	score = 0;
 	lastMillis = 0
-	gameRunning = true
-	frameRate(120)
+	gameRunning = true;
 }
 
 
 function resetMap() {
-	currentGameColor = color(random(50, 255), random(50, 255), random(50, 255), 255);
-	let mapSize = random(300, 1200);
-	let bubbleCount = random(1, 5);
+	currentGameColor = color(random(0, 360), 360, 360, 255);
+	let mapSize = random(minMapSize, maxMapSize);
+	let bubbleCount = random(1, 2);
 	// the rezolution should be 12 if the mapSize is 300 and 24 if the mapSize is 1200
-	let rezolution = map(mapSize, 300, 1200, 8, 30);
+	let rezolution = map(mapSize, minMapSize, maxMapSize, minRez, maxRez);
 	//let rezolution = random(12, 20);
 	let lerp = true;
 	map2 = new MarchingSquaresMapGenerator(mapSize, mapSize, rezolution, lerp, bubbleCount, currentGameColor);
 }
 
 function draw() {
-
-	//colorMode(HSB)
+	delta = deltaTime / 20;
+	console.log(deltaTime)
+	colorMode(HSB, 360, 360, 360, 255)
 	background(0)
 
 	//menu.displayIntro();
@@ -95,18 +110,10 @@ function draw() {
 		gameSong.play();
 	}
 
-	let delta = millis() - lastMillis;
+
 	lastMillis = millis();
-
-	if (player.tentacles.smallOne && millis() % 1000 <= 50 && !(millis() % 3000 <= 50)){
-		player.releaseSmallTentacle()
-
-	} else if (millis() % 3000 <= 50 && !player.tentacles.main && !player.tentacles.smallOne){
-		//player.shootSmallTentacle()
-	}
-
 	player.update()
-	camera.update(delta, player.position, player.velocity, 1.2);
+	camera.update(player.position, player.velocity, 1.2);
 
 	if(webglOn) {
 		translate(-width / 2, -height / 2, 0);
@@ -115,24 +122,15 @@ function draw() {
 	if(map2.bubbles.length === 0){
 		player.waypoint = createVector(map2.width * 1.5 + width, map2.height / 2);
 		if(player.position.x > map2.width + width / 2){
-			let newX = -width / 2;
-			player.position.x = newX;
-			if(player.tentacles.main){
-				player.tentacles.main.endPos.x -= (width + map2.width);
-			}
-			if(player.tentacles.smallOne){
-				player.tentacles.smallOne.endPos.x = (width + map2.width);
-			}
-
-			player.waypoint = createVector(map2.width / 2, map2.height / 2);
+			player.position.x = -width / 2;
 			this.resetMap();
-			player.setColor(currentGameColor)
-			//map2.increment = random(-1, 1);
+			player.waypoint = createVector(map2.width / 2, map2.height / 2);
+			//player.setColor(currentGameColor)
 		}
 	}
 
 	map2.display2();
-	player.draw(currentGameColor)
+	player.draw()
 	//menu.displayInGameUI();
 
 	//Draw the framerate
@@ -146,33 +144,6 @@ function draw() {
 	strokeWeight(5)
 	point(mouseX, mouseY);
 	pop();
-}
-
-function checkCollisions(){
-	let any_collision = false
-	for(let i=0; i<map.width; i++)
-	{
-		for(let j=0; j<map.height; j++)
-		{
-			let tile = map.tiles[i][j];
-			if(tile instanceof Wall)
-			{
-				let x_overlaps = (player.position.x-player.size/2 < tile.location.x + tile.scale) && (player.position.x+player.size/2 > tile.location.x)
-				let y_overlaps = (player.position.y-player.size/2 < tile.location.y + tile.scale) && (player.position.y + player.size / 2 > tile.location.y)
-				let collision = x_overlaps && y_overlaps
-				if(collision)
-				{
-					player.velocity.setMag(0);
-					any_collision = true
-					return any_collision;
-				}
-			}
-		}
-	}
-}
-
-function restartGame(){
-	setup();
 }
 
 function keyPressed(){
@@ -191,24 +162,17 @@ function keyPressed(){
 		showFrameRate = !showFrameRate;
 	}
 
-	// toggle godMode if 'g' is pressed
-	if (keyCode === 71){
+	// toggle godMode if 'h' is pressed
+	if (keyCode === 72){
 		godMode = !godMode;
 	}
+
+	// toggle gravity if 'g' is pressed
+	if (keyCode === 71){
+		gravityOn = !gravityOn;
+	}
 }
 
-function mousePressed(e){
-	if (e.button === 0){
-		player.shootTentacle()
-	}else if(e.button === 2){
-		player.releaseTentacle()
-	}
-
+function mousePressed(){
 	userStartAudio();
-}
-
-function mouseReleased(e){
-	if (e.button === 0){
-		player.releaseTentacle()
-	}
 }

@@ -19,7 +19,7 @@ class MarchingSquaresMapGenerator{
 
 	bubbles = [];
 
-	color = color(255, 0, 0, 255);
+	color;
 
 
 	constructor(_width, _height, _rez, _lerp, _bubbleCount, color) {
@@ -27,21 +27,26 @@ class MarchingSquaresMapGenerator{
 		this.width = _width;
 		this.height = _height;
 		this.rez = _rez;
+		//this.rez = 9;
 		//this.lerp = Math.random() < 0.5;
 		this.lerp = _lerp;
-		this.increment = random(-1, 1)
+		this.increment = random(0, 0.1)
 		this.zspeed = 0; // will be set within update to represent energy amount aka bubble count
 		this.backgroundNoiseThreshold = random(-1, 1);
+		this.backgroundNoiseThreshold = 0.025;
 		this.color = color;
 		this.shouldFill = random() < 0.5;
 		this.hasEllipses = Math.random() < 0.5;
 		this.ellipseMode = CENTER;
-		this.ellipseMultiplier = random(0.2, 1.2);
+		this.ellipseMultiplier = random(0.1, 1.2);
 		this.hasRects = Math.random() < 0.5;
 		this.rectMode = CENTER;
 		this.rectMultiplier = random(0.2, 1.2);
 		this.rectRotation = random(0, TWO_PI);
 		this.rectRotationRand = true;
+		this.normalHue = Math.random() < 0.5;
+		this.normalBrightness = Math.random() < 0;
+		this.showBorder = Math.random() < 0;
 
 		this.noise = new OpenSimplexNoise(Date.now());
 		this.cols = 1 + this.width / this.rez;
@@ -67,7 +72,7 @@ class MarchingSquaresMapGenerator{
 
 			do{
 				spaceOccupied = false;
-				r = random(25, 40);
+				r = 2 * this.rez;
 				position = createVector(random(r, this.width - r), random(r, this.height - r));
 				for(let bubble of this.bubbles){
 					if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
@@ -123,34 +128,20 @@ class MarchingSquaresMapGenerator{
 				ellipse(0, 0, r*this.ellipseMultiplier, r*this.ellipseMultiplier);
 			}
 
-			if(this.hasRects){
-				rotate(this.rectRotation)
+			if(this.hasRects || !this.hasEllipses){
+				rotate(this.rectRotation + rotation)
 				rectMode(this.rectMode)
 				rect(0, 0, r*this.rectMultiplier, r*this.rectMultiplier);
 			}
 
-			if(!this.hasEllipses && !this.hasRects){
-
-				stroke(color)
-				noFill()
-				point(0, 0);
-			}
 			pop();
 		}
 	}
 
-	displayBorders(color){
-		push();
-			camera.translateToView();
-			noFill();
-			rectMode(CORNER)
-			rect(0, 0, this.width, this.height);
-		pop();
-	}
-
-	displayBorders3(color){
+	displayBorders3(){
 		push();
 		camera.translateToView();
+		//translate(this.width/2, this.height/2);
 		noFill();
 		ellipseMode(CORNER);
 
@@ -158,19 +149,28 @@ class MarchingSquaresMapGenerator{
 		let centerY = this.height / 2;
 		let radius = Math.min(this.width, this.height) / 2;
 
+		let startAngle = 0;
+		let endAngle = TWO_PI;
+
 		let playerX = player.position.x;
 		let playerY = player.position.y;
-		let playerRadius = player.size * 4;
+
+		let playerAuraRadius = player.auraSize;
 
 		let intersections = this.getCircleCircleIntersections(
 			createVector(centerX, centerY),
 			radius,
 			createVector(playerX, playerY),
-			playerRadius
+			playerAuraRadius
 		);
 
-		let startAngle = 0;
-		let endAngle = TWO_PI;
+
+		let mapBorderColor = color(
+			hue(this.color),
+			100,
+			100,
+			255
+		);
 
 		if (intersections.length === 2) {
 			startAngle = atan2(intersections[0].y - centerY, intersections[0].x - centerX);
@@ -179,12 +179,15 @@ class MarchingSquaresMapGenerator{
 
 			// TODO: Add some effects on those intersection points
 			// some sparks, lighning style lines...
-			this.drawSparks(intersections[0].x, intersections[0].y, 0.5);
-			this.drawSparks(intersections[1].x, intersections[1].y, 0.5);
-			//strokeWeight(4)
-			//arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
+			//this.drawSparks(intersections[0].x, intersections[0].y, 0.5);
+			//this.drawSparks(intersections[1].x, intersections[1].y, 0.5);
+			this.drawLightning(intersections[0].x, intersections[0].y, playerX, playerY, 5, 12, mapBorderColor);
+			this.drawLightning(intersections[1].x, intersections[1].y, playerX, playerY, 5, 12, mapBorderColor);
 
 		}
+
+		// draw arc around map
+		stroke(mapBorderColor)
 		strokeWeight(4)
 		arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
 
@@ -192,13 +195,9 @@ class MarchingSquaresMapGenerator{
 	}
 
 	drawSparks(x, y, intensity) {
-		push();
+		push()
+		//translate(-this.width/2, -this.height/2);
 		stroke(this.color); // Yellow color for sparks
-		strokeWeight(3);
-		let centerX = this.width / 2;
-		let centerY = this.height / 2;
-		//let baseAngle = atan2(y - centerY, x - centerX);
-		let baseAngle = 0;
 		for (let i = 0; i < 10; i++) {
 			let angle = random(0, TWO_PI); // Add some random variation
 			let length = random(10, 20) * intensity; // Adjust length based on intensity
@@ -206,12 +205,50 @@ class MarchingSquaresMapGenerator{
 			let y2 = y + sin(angle) * length;
 			line(x, y, x2, y2);
 		}
+		pop()
+	}
+
+	drawLightning(x, y, destX, destY, segmentsCounter, maxOffset, _color) {
+		push();
+
+		//stroke(this.color); // Color for lightning
+
+		let currentX = x;
+		let currentY = y;
+		let segmentLength = dist(x, y, destX, destY) / segmentsCounter;
+
+		for (let i = 0; i < segmentsCounter; i++) {
+			let lightningColor = color(hue(_color), saturation(_color), brightness(_color), 255);
+			const alpha = 255-map(i, 0, segmentsCounter, 0, 255);
+			lightningColor.setAlpha(alpha)
+			stroke(lightningColor); // Color for lightning
+			strokeWeight(4 - map(i, 0, segmentsCounter, 0, 3));
+			let angle = atan2(destY - currentY, destX - currentX);
+			let offsetX = random(-maxOffset, maxOffset);
+			let offsetY = random(-maxOffset, maxOffset);
+			let nextX = currentX + cos(angle) * segmentLength + offsetX;
+			let nextY = currentY + sin(angle) * segmentLength + offsetY;
+
+			if (i === segmentsCounter - 1) {
+				nextX = destX;
+				nextY = destY;
+			}
+
+			line(currentX, currentY, nextX, nextY);
+			currentX = nextX;
+			currentY = nextY;
+		}
+
 		pop();
 	}
 
 	display2() {
+
+		// this is interesting, its like zooming:
+		// this.increment += random(0, 0.005);
+
 		this.zspeed = random(0.0001, 0.005) * this.bubbles.length;
-		this.displayBorders3();
+
 		let xoff = 0; // player.position.x / 100;
 		let centerX = this.width / 2;
 		let centerY = this.height / 2;
@@ -224,20 +261,23 @@ class MarchingSquaresMapGenerator{
 				let x = i * this.rez;
 				let y = j * this.rez;
 				let distanceFromCenter = dist(x, y, centerX, centerY);
-
-				if (distanceFromCenter > radius-20) {
-					let fieldColor = color(
-						red(this.color),
-						green(this.color),
-						blue(this.color),
-						0
-					);
-					this.field[i][j] = { color: fieldColor, noiseVal: 0 };
-					continue;
-				}
-
 				// Normalize the distance to a range of 0 to 1
 				let normalizedDistance = distanceFromCenter / radius;
+
+				if (distanceFromCenter > radius + 50) {
+					let fieldColor = color(
+						//map(normalizedDistance, 0, 1, 0, 360),
+						hue(this.color),
+						0,
+						0,
+						//360-map(normalizedDistance, 0, 1, 0, 360),
+						//360-map(normalizedDistance, 0, 1, 0, 360),
+						0
+					);
+					this.field[i][j] = { color: fieldColor, noiseVal: -0.999 };
+					yoff += this.increment;
+					continue;
+				}
 
 
 				// Calculate the value
@@ -258,20 +298,53 @@ class MarchingSquaresMapGenerator{
 				}
 
 				// PLAYER INTERFERENCE
-				let shadowRadius = player.size * 5;
 				let playerShadow = 0;
+
+				let shadowRadius = player.auraSize;
 				if (this.checkpointInElippse(player.position.x, player.position.y, x, y, shadowRadius, shadowRadius) < 1) {
-					playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
-					//playerShadow = + 50;
+					//playerShadow = random(0, 0.6) * (shadowRadius * shadowRadius) / ((x - player.position.x) * (x - player.position.x) + (y - player.position.y) * (y - player.position.y));
+					if(this.bubbles.length > 0){
+						playerShadow = random(0.1, 0.9) * dist(x, y, player.position.x, player.position.y) / shadowRadius;
+					}else{
+						playerShadow = 0.9;
+					}
 				}
 
 				let noiseVal = (float(this.noise.noise3D(xoff, yoff, this.zoff)) + sum - playerShadow);
 				noiseVal = constrain(noiseVal, -1, 1);
 
 				let fieldColor = color(
-					red(this.color),
-					green(this.color),
-					blue(this.color),
+					// HUE ###########################################################
+					this.normalHue ? hue(this.color) : (hue(this.color) + 360-map(normalizedDistance, 0, 1, 0, 180)) % 360,
+					//hue(this.color),
+
+					// color based on proximity to center
+					//(hue(this.color) + 360-map(normalizedDistance, 0, 1, 0, 180)) % 360,
+
+					// hue based on noise value
+					//(hue(this.color) + map(noiseVal, -1, 1, 0, 360)) % 360,
+
+					// hue base on distance from player
+					//(hue(this.color) + map(dist(x, y, player.position.x, player.position.y), 0, 100, 0, 100)) % 360,
+
+					// hue based on time
+					//(hue(this.color) + map(millis(), 0, 10000, 0, 360)) % 360,
+
+					saturation(this.color),
+
+					// BRIGHTNESS #####################################################
+					this.normalBrightness ? brightness(this.color) : 360-map(normalizedDistance, 0, 1, 0, 360),
+					// normal brightness
+					//brightness(this.color),
+
+					// brighter at edge
+					//map(normalizedDistance, 0, 1, 0, 360),
+
+					// brighter at center
+					//360-map(normalizedDistance, 0, 1, 0, 360),
+
+					// transparency based on noise value
+					//255,
 					min(255 * noiseVal, 255)
 				);
 				this.field[i][j] = { color: fieldColor, noiseVal: noiseVal };
@@ -296,116 +369,125 @@ class MarchingSquaresMapGenerator{
 
 				let distanceFromCenter = dist(x, y, centerX, centerY);
 
-				if (distanceFromCenter > radius - 20) {
-					//continue;
-				}
-
 				let noiseVal = this.field[i][j].noiseVal;
 
 				if (noiseVal > this.backgroundNoiseThreshold) {
 					let currentColor = this.field[i][j].color;
-					this.renderPositives(x, y, this.rez, currentColor, 0);
+					this.renderPositives(x, y, this.rez, currentColor, map(distanceFromCenter, 0, this.width/2, 0, PI));
 				}
 
-				let state = this.getState(
-					ceil(this.field[i][j].noiseVal),
-					ceil(this.field[i + 1][j].noiseVal),
-					ceil(this.field[i + 1][j + 1].noiseVal),
-					ceil(this.field[i][j + 1].noiseVal)
-				);
+				this.doMarchingSquares(x, y, i, j);
 
-				let a_val = this.field[i][j].noiseVal + 1;
-				let b_val = this.field[i + 1][j].noiseVal + 1;
-				let c_val = this.field[i + 1][j + 1].noiseVal + 1;
-				let d_val = this.field[i][j + 1].noiseVal + 1;
-
-				let a = createVector();
-				let amt;
-
-				if (this.lerp) {
-					amt = (1 - a_val) / (b_val - a_val);
-					a.x = lerp(x, x + this.rez, amt);
-				} else {
-					a.x = x;
-				}
-				a.y = y;
-
-				let b = createVector();
-				if (this.lerp) {
-					amt = (1 - b_val) / (c_val - b_val);
-					b.y = lerp(y, y + this.rez, amt);
-				} else {
-					b.y = y;
-				}
-				b.x = x + this.rez;
-
-				let c = createVector();
-				if (this.lerp) {
-					amt = (1 - d_val) / (c_val - d_val);
-					c.x = lerp(x, x + this.rez, amt);
-				} else {
-					c.x = x;
-				}
-				c.y = y + this.rez;
-
-				let d = createVector();
-				if (this.lerp) {
-					amt = (1 - a_val) / (d_val - a_val);
-					d.y = lerp(y, y + this.rez, amt);
-				} else {
-					d.y = y;
-				}
-				d.x = x;
-
-				stroke(this.color);
-				strokeWeight(2);
-				switch (state) {
-					case 1:
-						this.drawLine(c, d);
-						break;
-					case 2:
-						this.drawLine(b, c);
-						break;
-					case 3:
-						this.drawLine(b, d);
-						break;
-					case 4:
-						this.drawLine(a, b);
-						break;
-					case 5:
-						this.drawLine(a, d);
-						this.drawLine(b, c);
-						break;
-					case 6:
-						this.drawLine(a, c);
-						break;
-					case 7:
-						this.drawLine(a, d);
-						break;
-					case 8:
-						this.drawLine(a, d);
-						break;
-					case 9:
-						this.drawLine(a, c);
-						break;
-					case 10:
-						this.drawLine(a, b);
-						this.drawLine(c, d);
-						break;
-					case 11:
-						this.drawLine(a, b);
-						break;
-					case 12:
-						this.drawLine(b, d);
-						break;
-					case 13:
-						this.drawLine(b, c);
-						break;
-					case 14:
-						this.drawLine(c, d);
-						break;
-				}
 			}
+		}
+
+		if(this.showBorder){
+			this.displayBorders3();
+		}
+	}
+
+	doMarchingSquares(x, y, i, j) {
+		let state = this.getState(
+			ceil(this.field[i][j].noiseVal),
+			ceil(this.field[i + 1][j].noiseVal),
+			ceil(this.field[i + 1][j + 1].noiseVal),
+			ceil(this.field[i][j + 1].noiseVal)
+		);
+
+		let a_val = this.field[i][j].noiseVal + 1;
+		let b_val = this.field[i + 1][j].noiseVal + 1;
+		let c_val = this.field[i + 1][j + 1].noiseVal + 1;
+		let d_val = this.field[i][j + 1].noiseVal + 1;
+
+		let a = createVector();
+		let amt;
+
+		if (this.lerp) {
+			amt = (1 - a_val) / (b_val - a_val);
+			a.x = lerp(x, x + this.rez, amt);
+		} else {
+			a.x = x;
+		}
+		a.y = y;
+
+		let b = createVector();
+		if (this.lerp) {
+			amt = (1 - b_val) / (c_val - b_val);
+			b.y = lerp(y, y + this.rez, amt);
+		} else {
+			b.y = y;
+		}
+		b.x = x + this.rez;
+
+		let c = createVector();
+		if (this.lerp) {
+			amt = (1 - d_val) / (c_val - d_val);
+			c.x = lerp(x, x + this.rez, amt);
+		} else {
+			c.x = x;
+		}
+		c.y = y + this.rez;
+
+		let d = createVector();
+		if (this.lerp) {
+			amt = (1 - a_val) / (d_val - a_val);
+			d.y = lerp(y, y + this.rez, amt);
+		} else {
+			d.y = y;
+		}
+		d.x = x;
+
+		//stroke(this.color);
+		//stroke(this.field[i][j].color)
+		let colorWithAlpha = this.field[i][j].color;
+		colorWithAlpha.setAlpha(255);
+		stroke(colorWithAlpha);
+		strokeWeight(2);
+		switch (state) {
+			case 1:
+				this.drawLine(c, d);
+				break;
+			case 2:
+				this.drawLine(b, c);
+				break;
+			case 3:
+				this.drawLine(b, d);
+				break;
+			case 4:
+				this.drawLine(a, b);
+				break;
+			case 5:
+				this.drawLine(a, d);
+				this.drawLine(b, c);
+				break;
+			case 6:
+				this.drawLine(a, c);
+				break;
+			case 7:
+				this.drawLine(a, d);
+				break;
+			case 8:
+				this.drawLine(a, d);
+				break;
+			case 9:
+				this.drawLine(a, c);
+				break;
+			case 10:
+				this.drawLine(a, b);
+				this.drawLine(c, d);
+				break;
+			case 11:
+				this.drawLine(a, b);
+				break;
+			case 12:
+				this.drawLine(b, d);
+				break;
+			case 13:
+				this.drawLine(b, c);
+				break;
+			case 14:
+				this.drawLine(c, d);
+				break;
 		}
 	}
 

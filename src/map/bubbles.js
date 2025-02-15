@@ -7,7 +7,7 @@
 class Bubble {
 	constructor(position , r) {
 		this.r = r;
-		this.direction = createVector(random([-1, 1]), random([-1, 1]))
+		this.direction = createVector(random(-1, 1), random(-1, 1))
 		this.velocity = createVector(1, 1)
 		this.position = position;
 		this.friction = 0.02
@@ -21,17 +21,16 @@ class Bubble {
 			push()
 			camera.translateToView();
 			noFill();
-			stroke(255);
+			stroke(currentGameColor);
 			// fill(255, 50);
 			strokeWeight(2);
-			circle(this.position.x, this.position.y, this.r * 2);
-			text(this.charge, this.position.x - 10, this.position.y + 10)
+			circle(this.position.x, this.position.y, this.r*2);
 			pop();
 		}
 	}
 
 	update() {
-
+		//this.show();
 		if (this.charge <= 0){
 			map2.bubbles.splice(map2.bubbles.indexOf(this), 1)
 		}
