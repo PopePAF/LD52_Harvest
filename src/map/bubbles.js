@@ -17,9 +17,14 @@ class Bubble {
 	}
 
 	show() {
-		if(camera.pointInView(this.position.x + this.r, this.position.y) || camera.pointInView(this.position.x - this.r, this.position.y) || camera.pointInView(this.position.x, this.position.y + this.r) || camera.pointInView(this.position.x, this.position.y - this.r)) {
+		if(
+			view.pointInView(this.position.x + this.r, this.position.y)
+			|| view.pointInView(this.position.x - this.r, this.position.y)
+			|| view.pointInView(this.position.x, this.position.y + this.r)
+			|| view.pointInView(this.position.x, this.position.y - this.r)
+		) {
 			push()
-			camera.translateToView();
+			//view.translateToView();
 			noFill();
 			stroke(currentGameColor);
 			// fill(255, 50);
@@ -65,19 +70,21 @@ class Bubble {
 		}
 
 
+		// this collision check assums that the map is a rectangle
+		// but it actually is a circle
+
+		// this collision check assumes that the map is a circle
+
+		let distanceFromCenter = p5.Vector.dist(this.position, map2.location);
+		let mapRadius = map2.width / 2; // Assuming width and height are the same
+
+		if (distanceFromCenter > mapRadius - this.r) {
+			// put the bubble back inside the map by moving it towards the center
+			this.position = p5.Vector.lerp(this.position, map2.location, 0.1);
 
 
-		if (this.position.x > map2.width - this.r) {
-			this.direction.x = -1 * Math.abs(this.direction.x)
-		}
-		if (this.position.x < this.r){
-			this.direction.x = Math.abs(this.direction.x)
-		}
-		if (this.position.y > map2.height - this.r) {
-			this.direction.y = -1 * Math.abs(this.direction.y);
-		}
-		if (this.position.y < this.r){
-			this.direction.y = Math.abs(this.direction.y)
+			let normal = p5.Vector.sub(this.position, map2.location).normalize();
+			this.direction.reflect(normal);
 		}
 	}
 }

@@ -7,7 +7,7 @@ class Player{
         this.size = 30
         this.auraSize = 80
         this.speed = 0.8
-        this.speedLimit = 8
+        this.speedLimit = 15
         this.velocity = createVector()
         this.acc = createVector()
         this.friction = 0;
@@ -15,7 +15,7 @@ class Player{
         this.targetVector = createVector(initPos.x, initPos.y)
         this.targetVectorSmallOne = createVector(initPos.x, initPos.y)
         this.healthPerc = 1
-        this.waypoint = createVector(map2.width/2, map2.height/2);
+        this.waypoint = createVector(0, 0);
         this.lostHealth = 0.01;
         this.gainedHealth = 0.05;
         this.color = color;
@@ -37,8 +37,8 @@ class Player{
 
     draw(){
 
-        push()
-            camera.translateToView()
+        //push()
+            //camera.translateToView()
             this.drawWaypoint();
 
             fill(this.color)
@@ -54,7 +54,7 @@ class Player{
             this.drawPlayerHealth()
 
             line(this.position.x, this.position.y, this.position.x + this.velocity.x*2, this.position.y + this.velocity.y*2)
-        pop()
+        //pop()
     }
 
     drawPlayerHealth() {
@@ -87,10 +87,10 @@ class Player{
                 this.applyForce(p5.Vector.sub(this.waypoint, this.position).setMag(0.2), delta)
             }
         }else{
-            surfaceFriction = 0.05;
+            surfaceFriction = 0.025;
         }
 
-        this.velocity.add(this.acc).limit(this.speedLimit)
+        this.velocity.add(p5.Vector.mult(this.acc, delta)).limit(this.speedLimit)
         this.velocity.mult(1 - (this.friction+surfaceFriction) * delta)
 
         this.position.add(this.velocity)
@@ -159,8 +159,8 @@ class Player{
     }
 
     checkInBounds() {
-        let centerX = map2.width / 2;
-        let centerY = map2.height / 2;
+        let centerX = 0;
+        let centerY = 0;
         let radius = Math.min(map2.width, map2.height) / 2;
         let distanceFromCenter = dist(this.position.x, this.position.y, centerX, centerY);
         return distanceFromCenter <= radius;

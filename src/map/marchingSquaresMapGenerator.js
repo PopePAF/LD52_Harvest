@@ -22,11 +22,13 @@ class MarchingSquaresMapGenerator{
 	color;
 
 
-	constructor(_width, _height, _rez, _lerp, _bubbleCount, color) {
+
+	constructor(_width, _height, _lerp, _bubbleCount, color) {
+		this.location = createVector(0, 0);
 		this.bubbleCount = _bubbleCount;
 		this.width = _width;
 		this.height = _height;
-		this.rez = _rez;
+		this.rez = map(_width, minMapSize, maxMapSize, minRez, maxRez);
 		//this.rez = 9;
 		//this.lerp = Math.random() < 0.5;
 		this.lerp = _lerp;
@@ -60,8 +62,6 @@ class MarchingSquaresMapGenerator{
 		}
 
 		this.addBubbles(this.bubbleCount);
-
-
 	}
 
 	addBubbles(count){
@@ -72,8 +72,11 @@ class MarchingSquaresMapGenerator{
 
 			do{
 				spaceOccupied = false;
-				r = 2 * this.rez;
-				position = createVector(random(r, this.width - r), random(r, this.height - r));
+				r = this.rez*2;
+				position = createVector(
+					this.location.x+random(-this.width/2, this.width/2),
+					this.location.y+random(-this.height/2, this.height/2)
+				)
 				for(let bubble of this.bubbles){
 					if(this.checkCircleColission(position, r, bubble.position, bubble.r)){
 						spaceOccupied = true;
@@ -94,10 +97,10 @@ class MarchingSquaresMapGenerator{
 
 
 	drawLine(v1, v2) {
-		if(camera.lineInView(v1.x, v1.y, v2.x, v2.y)){
+		if(true || view.lineInView(v1.x, v1.y, v2.x, v2.y)){
 			let length = dist(v1.x,v1.y,v2.x,v2.y);
 			push();
-				camera.translateToView();
+				//view.translateToView();
 				// this ensures the players interference glitches dont get too messy... :D
 				if(length<50){
 					line(v1.x, v1.y, v2.x, v2.y);
@@ -108,11 +111,11 @@ class MarchingSquaresMapGenerator{
 	}
 
 	renderPositives(x, y, r, color, rotation){
-		if(camera.pointInView(x, y)){
+		if(true || view.pointInView(x, y)){
 			// console.log("line in view")
 			push();
 			translate(x, y)
-			camera.translateToView();
+			//view.translateToView();
 
 			if(this.shouldFill){
 				noStroke();
@@ -139,14 +142,8 @@ class MarchingSquaresMapGenerator{
 	}
 
 	displayBorders3(){
-		push();
-		camera.translateToView();
-		//translate(this.width/2, this.height/2);
-		noFill();
-		ellipseMode(CORNER);
-
-		let centerX = this.width / 2;
-		let centerY = this.height / 2;
+		let centerX = 0;
+		let centerY = 0;
 		let radius = Math.min(this.width, this.height) / 2;
 
 		let startAngle = 0;
@@ -181,21 +178,28 @@ class MarchingSquaresMapGenerator{
 			// some sparks, lighning style lines...
 			//this.drawSparks(intersections[0].x, intersections[0].y, 0.5);
 			//this.drawSparks(intersections[1].x, intersections[1].y, 0.5);
+			//push()
+			//translate(-this.width/2, -this.height/2);
 			this.drawLightning(intersections[0].x, intersections[0].y, playerX, playerY, 5, 12, mapBorderColor);
 			this.drawLightning(intersections[1].x, intersections[1].y, playerX, playerY, 5, 12, mapBorderColor);
-
+			//pop()
 		}
 
-		// draw arc around map
-		stroke(mapBorderColor)
-		strokeWeight(4)
-		arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
-
+		push();
+			noFill();
+			ellipseMode(CENTER);
+			//view.translateToView();
+			//translate(this.width/2, this.height/2);
+			// draw arc around map
+			stroke(mapBorderColor)
+			strokeWeight(4)
+			arc(0, 0, radius * 2, radius * 2, endAngle, startAngle);
+			//circle(0, 0, radius * 2);
 		pop();
 	}
 
 	drawSparks(x, y, intensity) {
-		push()
+		//push()
 		//translate(-this.width/2, -this.height/2);
 		stroke(this.color); // Yellow color for sparks
 		for (let i = 0; i < 10; i++) {
@@ -205,11 +209,11 @@ class MarchingSquaresMapGenerator{
 			let y2 = y + sin(angle) * length;
 			line(x, y, x2, y2);
 		}
-		pop()
+		//pop()
 	}
 
 	drawLightning(x, y, destX, destY, segmentsCounter, maxOffset, _color) {
-		push();
+		//push();
 
 		//stroke(this.color); // Color for lightning
 
@@ -239,28 +243,36 @@ class MarchingSquaresMapGenerator{
 			currentY = nextY;
 		}
 
-		pop();
+		//pop();
 	}
 
 	display2() {
 
+		if(this.bubbles.length === 0 && this.width > 2 * delta){
+			this.width -= 2 * delta;
+			this.height -= 2 * delta;
+		}
+
+		if(this.width <= 1){
+			return;
+		}
+
 		// this is interesting, its like zooming:
 		// this.increment += random(0, 0.005);
-
 		this.zspeed = random(0.0001, 0.005) * this.bubbles.length;
 
 		let xoff = 0; // player.position.x / 100;
-		let centerX = this.width / 2;
-		let centerY = this.height / 2;
+		let positionX = 0;
+		let positionY = 0;
 		let radius = Math.min(this.width, this.height) / 2;
 
 		for (let i = 0; i < this.cols; i++) {
 			xoff += this.increment;
 			let yoff = 0;
 			for (let j = 0; j < this.rows; j++) {
-				let x = i * this.rez;
-				let y = j * this.rez;
-				let distanceFromCenter = dist(x, y, centerX, centerY);
+				let x = i * this.rez - this.width/2;
+				let y = j * this.rez - this.height/2;
+				let distanceFromCenter = dist(x, y, positionX, positionY);
 				// Normalize the distance to a range of 0 to 1
 				let normalizedDistance = distanceFromCenter / radius;
 
@@ -314,9 +326,7 @@ class MarchingSquaresMapGenerator{
 					if(this.bubbles.length > 0) {
 						noise = this.noise.noise3D(xoff, yoff, this.zoff);
 					}else{
-						noise = this.field[i][j].noiseVal - 0.0001 * delta;
-						this.width -= 0.0004 * delta;
-						this.height -= 0.0004 * delta;
+						noise = this.field[i][j].noiseVal - 0.001 * delta;
 					}
 
 					let noiseVal = (float(noise) + sum - playerShadow);
@@ -377,21 +387,23 @@ class MarchingSquaresMapGenerator{
 				let x = i * this.rez;
 				let y = j * this.rez;
 
-				if (!camera.pointInView(x, y)) {
-					continue;
+				if (!view.pointInView(x, y)) {
+					//continue;
 				}
 
-				let distanceFromCenter = dist(x, y, centerX, centerY);
+				let distanceFromCenter = dist(x, y, positionX, positionY);
 
 				let noiseVal = this.field[i][j].noiseVal;
 
+				push()
+				translate(-this.width/2, -this.height/2);
 				if (noiseVal > this.backgroundNoiseThreshold) {
 					let currentColor = this.field[i][j].color;
 					this.renderPositives(x, y, this.rez, currentColor, map(distanceFromCenter, 0, this.width/2, 0, PI));
 				}
 
 				this.doMarchingSquares(x, y, i, j);
-
+				pop();
 			}
 		}
 

@@ -3,11 +3,13 @@
 
 // TODO: look at that: https://jsfiddle.net/klenwell/3ZdXf/
 
-let resetCount = 0;
+let resetCount = 0
+
+let soundOn = false;
 
 let map2;
 
-let camera;
+let view;
 
 let lastMillis;
 
@@ -37,10 +39,10 @@ let godMode			= true;
 let gravityOn			= true;
 
 // MAP SETTINGS
-let minMapSize			= 200;
-let maxMapSize			= 2000;
-let minRez = 15;
-let maxRez = 30;
+let minMapSize			= 400;
+let maxMapSize			= 1500;
+let minRez = 20;
+let maxRez = 35;
 
 function preload(){
 	gameSong = loadSound('assets/ingame.mp3', null, null);
@@ -62,12 +64,12 @@ function setup() {
 
 	menu = new Menu();
 	noise = new OpenSimplexNoise(Date.now());
-	camera = new View(0, 0, width, height)
+	view = new View(0, 0, width, height)
 
 	this.resetMap();
 
 	// spawn player
-	let newPosition = createVector(map2.cols/2 * map2.rez - map2.height/2 - 90, map2.rows/2 * map2.rez);
+	let newPosition = createVector(map2.location.x - map2.width/2 - 90, map2.location.y);
 	player = new Player(newPosition, color(350, 360, 300));
 
 	// send player into orbit around map
@@ -91,7 +93,7 @@ function resetMap() {
 	let rezolution = map(mapSize, minMapSize, maxMapSize, minRez, maxRez);
 	//let rezolution = random(12, 20);
 	let lerp = true;
-	map2 = new MarchingSquaresMapGenerator(mapSize, mapSize, rezolution, lerp, bubbleCount, currentGameColor);
+	map2 = new MarchingSquaresMapGenerator(mapSize, mapSize, lerp, bubbleCount, currentGameColor);
 }
 
 function draw() {
@@ -106,32 +108,34 @@ function draw() {
 		return
 	}
 
-	if (!gameSong.isPlaying()) {
+	if (soundOn && !gameSong.isPlaying()) {
 		gameSong.play();
 	}
 
 
 	lastMillis = millis();
 	player.update()
-	camera.update(player.position, player.velocity, 1.2);
+	view.update(player.position, player.velocity, 1.2);
 
 	if(webglOn) {
 		translate(-width / 2, -height / 2, 0);
 	}
 
 	if(map2.bubbles.length === 0){
-		player.waypoint = createVector(map2.width * 1.5 + width, map2.height / 2);
+		player.waypoint = createVector(map2.location.x + width*2, map2.location.y);
 		if(player.position.x > map2.width + width / 2){
-			player.position.x = -width / 2;
+			player.position.x = -map2.width - width / 2 ;
 			this.resetMap();
-			player.waypoint = createVector(map2.width / 2, map2.height / 2);
+			player.waypoint = createVector(map2.location.x, map2.location.y);
 			//player.setColor(currentGameColor)
 		}
 	}
+	push()
+	view.translateToView();
 
 	map2.display2();
 	player.draw()
-
+	pop();
 	//menu.displayInGameUI();
 
 	//Draw the framerate
@@ -140,11 +144,6 @@ function draw() {
 		textSize(16);
 		text("FPS: " + floor(frameRate()), 10, height - 10);
 	}
-
-	push();
-	strokeWeight(5)
-	point(mouseX, mouseY);
-	pop();
 }
 
 function keyPressed(){
